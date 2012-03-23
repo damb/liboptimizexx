@@ -1,0 +1,254 @@
+/*! \file liboptimizexx/README
+ * \brief liboptimizexx: Global search and optimization algorithms.
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * $Id$
+ * 
+ * Copyright (c) 2012 by Daniel Armbruster (Black Forest observatory - BFO)
+ * 
+ * liboptimizexx: Global search and optimization algorithms.
+ *
+ * This file contains:
+ *  - documentation of namespace optimize
+ *  - mainpage text
+ * 
+ * REVISIONS and CHANGES 
+ *  - 11/03/2012   V1.0   Daniel Armbruster
+ *  - 19/03/2012   V1.1   Monte Carlo algorithm section
+ * 
+ * ============================================================================
+ */
+
+/*===========================================================================*/
+
+/*! \mainpage
+
+\author Daniel Armbruster
+\since February 2012
+\date March 2012
+\version V0.1.1
+$Id$
+
+  Contents of this page:
+  - \ref sec_concept
+
+  Other pages:
+  - For library users:
+    - \ref page_global_algorithms
+    - \ref page_how_to_use
+
+\section sec_concept Concept of the library
+
+This library provides global search and optimization algorithms working with
+any application on a discrete parameter space. The algorithm is responsible for
+the refinement of the parameter space if desired and sending the application
+into the grid. An application must be made available by inheritance from the
+class optimize::ParameterSpaceVisitor. If using a global algorithm there only
+must be passed the corresponding parameters so that the algorithm will care
+about the generation of its parameter space and executing an application.\n
+The parameter space on the other hand only is accessible via a query function
+from the global algorithm. It is described with a grid consisting of both
+subgrids and nodes of which the latter are able to store any result data
+type.\n
+
+Additionally the library comes along with an iterators to iterate over the
+entire parameter space. Up to now iterating both \a post-ordered and \a
+pre-ordered is provided. Besides a usual optimize::Iterator to iterate over all
+grid components of type optimize::GridComponent a parameter space contains, it's
+also possible to iterate only either over components of type optimize::Node or
+of type optimize::Grid.\n
+
+Because the library was built using extensively design patterns it should be
+extensible easily in a modular way. The parameter space is set up making use of
+the <em>Composite design pattern</em> (GoF p.163) while it will be created using
+an instance of a concrete builder class (GoF p.97) like i.e.
+optimize::StandardParameterSpaceBuilder (Up to now no further concrete builders
+are provided).\n
+Iterating over a parameter space is implemented using both the <em>Iterator design
+pattern</em> (GoF p.257) including the <em>Memento design pattern</em> (GoF
+p.283), of which the latter completely is hidden from the user and just is
+necessary to save the iteration states of an iterator. liboptimizexx iterators
+are implemented as <em>external polymorphic iterators</em>. Because
+optimize::Grid::createIterator returns a newly allocated iterator object the
+user is responsible for deleting it afterwards. To make life easier \a
+liboptimizexx comes along with the \a proxy class template optimize::IteratorPtr
+which takes care of cleaning up the iterator object when it goes out of
+scope.\n
+To split on one hand the application and on the other hand the environment a
+parameter space provides every application must be implemented by inheritance of
+the class optimize::ParameterSpaceVisitor which means that each global algorithm
+which had been created by inheritance of class optimize::GlobalAlgorithm only is
+responsible for sending a concrete instance of an parameter space application
+through the parameter space following its appropriated rules. This is a great
+advantage because the <em>Visitor design pattern</em> (GoF p.331) allows us to
+define new operations or rather applications on a parameters space grid without
+changing the classes which represent the parameter space.
+
+
+
+
+*/
+
+/*===========================================================================*/
+/*! \page page_global_algorithms Provided global algorithms
+
+  - \ref sec_grid_search
+  - \ref sec_monte_carlo
+
+\section sec_grid_search Grid search
+Generally the grid search algorithm can be regarded as a brute force algorithm
+which computes for every parameter combination in the parameter space a result.
+Sometimes it's also known as exhaustive searching. Since calculating a result
+for each parameter combination in the parameter space might be really expensive
+there exist several alternatives. Though for small parameter spaces and a small
+number of unknown parameters using the grid search algorithm usually is
+justified.
+
+\section sec_monte_carlo Monte Carlo
+The \a Monte Carlo method especially is useful for simulating systems with many
+coupled degrees of freedom which means in words of \a liboptimizexx that the
+problem has a parameter space of a high dimension.\n
+After generating a discrecte parameter space the Monte Carlo algorithm
+generate its nodes in the parameter space to compute randomly from a
+probability distribution. liboptimizexx comes along with the following
+probability distributions (if compiled with \a C++11 support) which can be
+selected passing the corresponding enumeration type optimize::Edistribution to
+the constructor. Notice, that default is optimize::Normal which refers to the
+Normal or Gaussian distribution. If \a C++11 support is not enabled the \c
+rand() function of \c cstdlib.h will be used.\n
+After the calculation the results might be fetched using a
+optimize::NodeIterator.
+
+*/
+
+/*===========================================================================*/
+/*! \page page_how_to_use How to use a global algorithm
+
+To make use of a \c liboptimizexx global algorithm I'm providing here a short
+sequence of code. First we need an exemplary application created by inheritance
+of the class template optimize::ParameterSpaceVisitor.
+
+\code
+#include <optimizexx/application.h>
+
+namespace opt = optimize;
+
+typedef double TcoordType;
+typedef double TresultType;
+
+//! simple application calculating the sum of the parameters
+class Sum : public opt::ParameterSpaceVisitor<TcoordType, TresultType>
+{
+  public:
+    /*! Visit function for a grid.
+     * Does nothing by default.
+     * Since a grid has no coordinates the body of this function is empty.
+     *
+     * \param grid Grid to be visited.
+     */
+    virtual void operator()(opt::Grid<TcoordType, TresultType>* grid) { }
+      //! Visit function / application for a node.
+      /*!
+       * Calculates the sum of the coordinate data or rather the parameters
+       *
+       * \param node Node to be visited.
+       */
+    virtual void operator()(opt::Node<TcoordType, TresultType>* node)
+    {
+      std::vector<TcoordType> const& params = node->getCoordinates();
+      TresultType result = 0;
+      for (std::vector<TresultType>::const_iterator cit(params.begin());
+          cit != params.end(); ++cit)
+      {
+        result += *cit;
+      }
+      node->setResultData(result);
+    }
+}; // class Sum
+\endcode
+
+Now let's consider the main function of our example. After implementing a
+parameter space application defining the boundaries of the parameter space have
+is the next step. With instances of the class template optimize::Parameter we
+need to push the parameters back into a common  STL \c vector. Notice that the
+third argument in the constructor defines the granularity of each component.
+
+\code
+#include <vector>
+#include <optimizexx/parameter.h>
+
+// create parameters
+opt::Parameter<TcoordType> param1(0,1.,0.25);
+opt::Parameter<TcoordType> param2(-1,1.,0.5);
+
+std::vector<optimize::Parameter<TcoordType> > params;
+params.push_back(param1);
+params.push_back(param2);
+\endcode
+
+Setting up an instance of a concrete parameter space builder now is the
+necessary. Here we use an instance of optimize::StandardParameterSpaceBuilder.
+
+\code
+#include <optimizexx/standardbuilder.h>
+
+// create parameter space builder
+opt::ParameterSpaceBuilder<TcoordType, TresultType>* builder =
+  new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>;
+\endcode
+
+This is the time to generate the global algorithm, constructing the parameter
+space, creating an instance of our \c Sum application and executing the global
+algorithm.
+
+\code
+#include <optimizexx/globalalgorithms/gridsearch.h>
+
+// create gridsearch algorithm
+opt::GridSearch<TcoordType, TresultType>* gridsearch = 
+  new opt::GridSearch<TcoordType, TresultType>(builder, params);
+
+gridsearch->constructParameterSpace();
+
+// create application
+Sum app;
+gridsearch->execute(app);
+\endcode
+
+Afterwards the results can be collected from the parameter space using a
+optimize::NodeIterator. Here the results only were printed to \c stdout.
+
+\code
+// print results using a node iterator
+opt::CompositeIterator<TcoordType, TresultType>* it = 
+  gridsearch->getParameterSpace().createIterator(opt::NodeIter);
+
+for (it->first(); !it->isDone(); it->next())
+{
+  // print node coordinates
+  std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+  for (std::vector<TcoordType>::const_iterator cit(c.begin());
+      cit != c.end(); ++cit)
+  {
+    std::cout << *cit << " ";
+  }
+  // print result data
+  std::cout << it->currentItem()->getResultData() << std::endl;
+}
+\endcode
+
+To finish this short example the only thing to perform is to free the allocated
+memory.
+
+\code
+delete it;
+delete builder;
+delete gridsearch;
+\endcode
+
+\sa \ref page_global_algorithms
+\date March 2012
+*/
+
+// ------ END OF README.doxydoc ------

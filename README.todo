@@ -1,0 +1,49 @@
+this is <README.todo>
+===============================================================================
+TODO for liboptimizexx
+----------------------
+$Id$
+===============================================================================
+
+General:
+--------
+1.  Various itorators will be implemented using the memento design pattern (GoF
+    p. 283)
+2.  Each Node will be configured with the data so that a visitor can perform the
+    corresponding operation/application. This separates the data from the
+    algorithm and makes the code easier for maintainance.
+3.  Parameter spaces (actually a grid) will be build with a
+    ParameterSpaceBuilder.
+
+
+===============================================================================
+Implementation:
+---------------
+
+1. DimensionlessParameterSpaceBuilder:
+  Only assumes that the start value is 0 and the end value is 1. Its constructor
+  must know how many dimensions the grid has and in how many steps each
+  dimension is divided. The visitor then is responsible to translate this
+  coordinates to the corresponding value and so has to know the searching range
+  of the parameter i.e.
+  Assuming that a grid coordinate has 200 steps and its visitor knows the
+  concrete searching range i.e. 115 to 125 of a parameter. Then the visitor in
+  case of the calex example is able to calculate the concrete value of the
+  dimensionless grid coordinate value at the 143th step with
+
+  (143*(1/200))*(125-115) + 115
+
+  One issue could if using subgrids because subgrids, too, will have the same
+  parameter range from 0 to 1 so that only the visitor has to decide how to
+  refine the grid - but this either will do the global algorithm so that it
+  could pass a new/finer searching range to the parameter. As a consequence
+  for dimensionless grids subgrids do not make really sense.
+
+  ISSUES:
+  -------
+  A issue of this approach is that my global algorithm holds the parameters.
+  This isn't really comfortable but convenient if the algorithm has to decide if
+  parameters should be refined.
+  A workaround could be to provide dimensionless Parameters which are a instance
+  of a optimize::Parameter. Think about how to implement this facility
+  convenientl.
