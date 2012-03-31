@@ -81,10 +81,12 @@ class Sum : public opt::ParameterSpaceVisitor<TcoordType, TresultType>
 int main()
 {
   // create parameters
-  opt::Parameter<TcoordType> param1(0,1.,0.025);
-  opt::Parameter<TcoordType> param2(-1,1.,0.05);
+  opt::Parameter<TcoordType> const* param1 = 
+    new opt::StandardParameter<TcoordType>("param1",0,1.,0.025);
+  opt::Parameter<TcoordType> const* param2 = 
+    new opt::StandardParameter<TcoordType>("param2",-1,1.,0.05);
   
-  std::vector<optimize::Parameter<TcoordType> > params;
+  std::vector<optimize::Parameter<TcoordType> const*> params;
   params.push_back(param1);
   params.push_back(param2);
 
@@ -123,6 +125,8 @@ int main()
   delete it;
   delete builder;
   delete montecarlo;
+  delete param1;
+  delete param2;
 
   return 0;
 } // function main

@@ -59,7 +59,11 @@ namespace optimize
    * here the builder design pattern is in use (GoF p.97).
    *
    * This builder builds a usual grid only consisting of nodes without the
-   * opportunity to add a subgrid to this grid.
+   * opportunity to add a subgrid to this grid.\n
+   *
+   * Additionally the builder design pattern is in use (GoF p.151). The abstract
+   * class template optimize::ParameterSpaceBuilder corresponds to \c
+   * RefinedAbstraction in GoF.
    *
    * \ingroup group_builder
    */
@@ -75,6 +79,14 @@ namespace optimize
       //! constructor
       StandardParameterSpaceBuilder() : Tbase(0)
       { }
+      /*!
+       * query function for order of parameters the builder will generate the
+       * parameter space grid
+       *
+       * \param dims number of dimensions of the parameter space
+       * \return vector containing the order
+       */
+      virtual std::vector<int> getParameterOrder(size_t const dims) const;
       //! Create an instance of a parameter space.
       virtual void buildParameterSpace();
       /*!
@@ -83,7 +95,8 @@ namespace optimize
        *
        * \param parameters Parameters of the parameter space.
        */
-      virtual void buildGrid(typename std::vector<Parameter<Ctype> > const&
+      virtual void buildGrid(
+          typename std::vector<Parameter<Ctype> const*> const&
           parameters);
       //! destructor
       virtual ~StandardParameterSpaceBuilder() { }
@@ -106,21 +119,32 @@ namespace optimize
 
   /* ----------------------------------------------------------------------- */
   template<typename Ctype, typename CresultData> 
+  std::vector<int> 
+  StandardParameterSpaceBuilder<Ctype, CresultData>::getParameterOrder(
+      size_t const dims) const
+  {
+    std::vector<int> retval(dims);
+    for (size_t i = 0; i < dims; ++i) { retval[i] = i; }
+    return retval;
+  } // function StandardParameterSpaceBuilder::getParameterOrder
+
+  /* ----------------------------------------------------------------------- */
+  template<typename Ctype, typename CresultData> 
   void StandardParameterSpaceBuilder<Ctype, CresultData>::buildGrid(
-      typename std::vector<Parameter<Ctype> > const& parameters)
+      typename std::vector<Parameter<Ctype> const*> const& parameters)
   {
     size_t dimension = parameters.size();      
 
     // coordinate ids of parameter space
     std::vector<std::string> coordIds;
     coordIds.reserve(dimension);
-    for (typename std::vector<Parameter<Ctype> >::const_iterator cit(
+  for (typename std::vector<Parameter<Ctype> const*>::const_iterator cit(
           parameters.begin()); cit != parameters.end(); ++cit)
     {
-      OPTIMIZE_assert(cit->isValid(), "Invalid parameter");
-      if (! cit->getId().empty())
+      OPTIMIZE_assert((*cit)->isValid(), "Invalid parameter");
+      if (! (*cit)->getId().empty())
       {
-        coordIds.push_back(cit->getId());
+        coordIds.push_back((*cit)->getId());
       } else
       {
         coordIds.push_back("Unkown");
@@ -132,29 +156,28 @@ namespace optimize
     typename std::vector<Tcomponent> components;
     components.reserve(dimension);
 
-    for (typename std::vector<Parameter<Ctype> >::const_iterator cit(
-          parameters.begin()); cit != parameters.end(); ++cit)
+    for (typename std::vector<Parameter<Ctype> const*>::const_iterator 
+        cit(parameters.begin()); cit != parameters.end(); ++cit)
     {
       // number of samples - round up
-      size_t samples = static_cast<size_t>(ceil(
-                fabs(cit->getEnd() - cit->getStart()) / cit->getDelta())+1);
+      size_t samples = (*cit)->getSamples();
 
       Tcomponent component;
       component.reserve(samples);
       // generate samples
-      Ctype val = cit->getStart();
+      Ctype val = (*cit)->getStart();
 
       for (size_t s = 0; s < samples; ++s)
       {
         component.push_back(val);
-        val += cit->getDelta();
+        val += (*cit)->getDelta();
       }
 
       components.push_back(component);
       component.clear();
     }
 
-    // component iterators
+    // vector of component iterators
     typename std::vector<typename Tcomponent::const_iterator> iterators;
     for (typename std::vector<Tcomponent>::const_iterator cit(
         components.begin()); cit != components.end(); ++cit)

@@ -81,10 +81,10 @@ namespace optimize
        *
        * \param parameterspacebuilder Pointer to a builder of a parameter space.
        * Default is a StandardParameterSpaceBuilder.
-       * \param parameters STL vector of parameters.
+       * \param parameters STL vector of pointers to parameters.
        */
       GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder, 
-          std::vector<Parameter<Ctype> > const parameters) : 
+          std::vector<Parameter<Ctype> const*> const parameters) : 
           Tbase(0, builder, parameters)
       { }
       /*!

@@ -56,10 +56,12 @@ int main ()
   typedef double TcoordType;
   typedef double TresultType;
   // create parameters
-  opt::Parameter<TcoordType> param1(0,1.,0.5, "param1");
-  opt::Parameter<TcoordType> param2(-1,1.,1., "param2");
+  opt::Parameter<TcoordType> const* param1 =
+    new opt::StandardParameter<TcoordType>("param1",0,1.,0.5);
+  opt::Parameter<TcoordType> const* param2 =
+    new opt::StandardParameter<TcoordType>("param2",-1,1.,1.);
   
-  std::vector<optimize::Parameter<TcoordType> > params;
+  std::vector<optimize::Parameter<TcoordType> const*> params;
   params.push_back(param1);
   params.push_back(param2);
 
@@ -160,6 +162,8 @@ int main ()
   delete end;
   delete it;
   delete builder;
+  delete param1;
+  delete param2;
 
   return 0;
 

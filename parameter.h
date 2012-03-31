@@ -38,6 +38,8 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <cmath>
+#include <optimizexx/error.h>
 
 #ifndef _PARAMETER_H_
 #define _PARAMETER_H_
@@ -46,15 +48,67 @@ namespace optimize
 {
   /* ======================================================================= */
   /*!
-   * Parameter for the parameter space. The template parameter might be used to
-   * specify either an integer, single precision floating point, or double
-   * precision floating point parameter.
+   * Abstract base class template for \a liboptimizexx parameters.
    *
-   * Default is double precision.
+   * Builder design pattern in use (GoF p.151). optimize::Parameter corresponds
+   * to the abstract \c Implementor in GoF.\n
+   *
+   * \note The implementation of \a liboptimizexx does not exclude from creating
+   * parameter spaces which are created from both optimize::Standardparameter
+   * and optimize::DimensionlessParameter.
    */
   template <typename Ctype=double>
   class Parameter
   {
+    public:
+      virtual ~Parameter() { }
+      //! query function for start value of parameter
+      virtual Ctype getStart() const = 0;
+      //! query function for end value of parameter
+      virtual Ctype getEnd() const = 0;
+      //! query function for delta value / parameter interval of parameter 
+      virtual Ctype getDelta() const = 0;
+      //! query function for the number of samples the parameter contains
+      virtual unsigned int getSamples() const = 0;
+      //! query function for parameter unit
+      virtual std::string getUnit() const = 0;
+      //! query function for parameter id
+      virtual std::string const& getId() const { return Mid; }
+      //! check if a parameter is valid
+      virtual bool isValid() const = 0;
+
+    protected:
+      /*!
+       * constructor
+       *
+       * \param id Identifier for a parameter
+       */
+      Parameter(std::string const id="") : Mid(id) { }
+
+    protected:
+      //! id of parameter
+      std::string Mid;
+
+  }; // class template Parameter
+
+  /* ======================================================================= */
+  /*!
+   * StandardParameter for the parameter space. The template parameter might
+   * be used to specify either an integer, single precision floating point,
+   * or double precision floating point parameter.\n
+   *
+   * Default is double precision.\n
+   *
+   * Builder design pattern in use (GoF p.151). optimize::StandardParameter
+   * corresponds to a concrete implementor in GoF.
+   */
+  template <typename Ctype=double>
+  class StandardParameter : public Parameter<Ctype>
+  {
+    public:
+      //! typedef to base class
+      typedef Parameter<Ctype> Tbase;
+    
     public:
       /*!
        * constructor
@@ -65,9 +119,9 @@ namespace optimize
        * \param id parameter name
        * \param unit physical unit of paramter
        */
-      Parameter(Ctype start, Ctype end, Ctype delta, std::string const id="", 
-          std::string const unit="") : Mstart(start), Mend(end), Mdelta(delta),
-          Mid(id), Munit(unit)
+      StandardParameter(std::string const id, Ctype start, Ctype end,
+          Ctype delta, std::string const unit="") : Tbase(id), Mstart(start),
+          Mend(end), Mdelta(delta), Munit(unit)
       { }
       /*!
        * constructor
@@ -75,23 +129,23 @@ namespace optimize
        * \param param parameter string
        * \param sep separator
        */
-      Parameter(std::string const& param, const char sep=' ');
+      StandardParameter(std::string const& param, const char sep=' ');
       //! destructor
-      virtual ~Parameter() { }
+      virtual ~StandardParameter() { }
       //! query function for start value of parameter
-      Ctype const& getStart() const { return Mstart; }
+      virtual Ctype getStart() const { return Mstart; }
       //! query function for end value of parameter
-      Ctype const& getEnd() const { return Mend; }
+      virtual Ctype getEnd() const { return Mend; }
       //! query function for delta value / parameter interval of parameter 
-      Ctype const& getDelta() const { return Mdelta; }
-      //! query function for parameter id
-      std::string const& getId() const { return Mid; }
+      virtual Ctype getDelta() const { return Mdelta; }
+      //! query function for the number of samples the parameter contains
+      virtual unsigned int getSamples() const;
       //! query function for parameter unit
-      std::string const& getUnit() const { return Munit; }
+      virtual std::string getUnit() const { return Munit; }
       //! check if a parameter is valid
-      bool isValid() const;
+      virtual bool isValid() const;
 
-    protected:
+    private:
       /*!
        * read parameter from a parameter string using a sepatator character
        *
@@ -106,24 +160,77 @@ namespace optimize
       Ctype Mend;
       //! delta interval
       Ctype Mdelta;
-      //! id of parameter
-      std::string Mid;
       //! physical unit of the parameter
       std::string Munit;
 
-  }; // class template Parameter
+  }; // class template StandardParameter
 
   /* ======================================================================= */
+  /*!
+   * Dimensionless parameter to create a dimensionless parameter space.
+   * \ņote If a parameter space had been created with a dimensionless parameter
+   * the application / visitor traversing the parameter space then has to decide
+   * how to interpret the values.\n
+   *
+   * Builder design pattern in use (GoF p.151).
+   * optimize::DimensionlessParameter corresponds to a concrete implementor in
+   * GoF.
+   */
+  class DimensionlessParameter : public Parameter<double>
+  {
+    public:
+      /*!
+       * constructor
+       *
+       * \param id Identifer of the parameter
+       * \param samples number of samples
+       */
+      DimensionlessParameter(std::string const id,
+          unsigned int const samples) : Tbase(id), Msamples(samples)
+      { }
+      //! destructor
+      virtual ~DimensionlessParameter() { }
+      //! query function for start value of parameter
+      virtual double getStart() const { return 0; }
+      //! query function for end value of parameter
+      virtual double getEnd() const { return 1; }
+      //! query function for delta value / parameter interval of parameter 
+      virtual double getDelta() const;
+      //! query function for the number of samples the parameter contains
+      virtual unsigned int getSamples() const { return Msamples; }
+      //! query function for parameter unit
+      virtual std::string getUnit() const { return ""; }
+      //! check if a parameter is valid
+      virtual bool isValid() const { return Msamples > 2; }
+
+    private:
+      //! typedef for base class
+      typedef Parameter<double> Tbase;
+      //! number of samples
+      unsigned int Msamples;
+
+  }; // class DimensionlessParameter
+
+  /* ======================================================================= */
+  // function implementation of class template StandardParameter
+  /* ======================================================================= */
   template <typename Ctype>
-  Parameter<Ctype>::Parameter(std::string const& param, const char sep) :
-      Mid(""), Munit("")
+  StandardParameter<Ctype>::StandardParameter(std::string const& param,
+      const char sep) : Tbase(""), Munit("")
   {
     readFromString(param, sep);
   }
 
   /* ----------------------------------------------------------------------- */
   template <typename Ctype>
-  bool Parameter<Ctype>::isValid() const
+  unsigned int StandardParameter<Ctype>::getSamples() const
+  {
+    return static_cast<unsigned int>(ceil(fabs(Mend - Mstart) / Mdelta)+1);
+  } // function StandardParameter<Ctype>::getSamples
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype>
+  bool StandardParameter<Ctype>::isValid() const
   {
     if (Mstart == Mend) { return false; }
     if (((Mstart > 0 && Mend > 0) || (Mstart < 0 && Mend < 0)) &&
@@ -134,11 +241,11 @@ namespace optimize
     if (Mdelta > (fabs(Mend) + fabs(Mstart))) { return false; }
 
     return true;
-  } // function Parameter<Ctype>::isValid()
+  } // function StandardParameter<Ctype>::isValid
 
   /* ----------------------------------------------------------------------- */
   template <typename Ctype>
-  void Parameter<Ctype>::readFromString(std::string const& param,
+  void StandardParameter<Ctype>::readFromString(std::string const& param,
       const char sep)
   {
     std::string str(param); 
@@ -160,13 +267,13 @@ namespace optimize
     iss >> Mdelta;
     if (tokens.size() > 3)
     {
-      Mid = tokens[3];
+      Tbase::Mid = tokens[3];
     }
     if (tokens.size() > 4)
     {
       Munit = tokens[4];
     }
-  } // function Parameter<Ctype>::readFromString()
+  } // function StandardParameter<Ctype>::readFromString
 
   /* ----------------------------------------------------------------------- */
 

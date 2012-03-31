@@ -49,27 +49,30 @@ int main ()
   typedef int TresultType;
 
   // create parameters
-  opt::Parameter<TcoordType> param1(0,10,1.);
-  opt::Parameter<TcoordType> param2(0,2,0.5);
-  opt::Parameter<TcoordType> param3(0,1.,0.25);
+  opt::Parameter<TcoordType> const* param1 = 
+    new opt::StandardParameter<TcoordType>("param1",0,10,1.);
+  opt::Parameter<TcoordType> const* param2 = 
+    new opt::StandardParameter<TcoordType>("param2",0,2,0.5);
+  opt::Parameter<TcoordType> const* param3 = 
+    new opt::StandardParameter<TcoordType>("param3",0,1.,0.25);
 
-  std::cout << "param1: start: " << param1.getStart() 
-    << " end: " << param1.getEnd() 
-    << " delta: " << param1.getDelta() << std::endl;
-  std::cout << "param2: start: " << param2.getStart() 
-    << " end: " << param2.getEnd() 
-    << " delta: " << param2.getDelta() << std::endl;
-  std::cout << "param3: start: " << param3.getStart() 
-    << " end: " << param3.getEnd() 
-    << " delta: " << param3.getDelta() << std::endl;
+  std::cout << "param1: start: " << param1->getStart() 
+    << " end: " << param1->getEnd() 
+    << " delta: " << param1->getDelta() << std::endl;
+  std::cout << "param2: start: " << param2->getStart() 
+    << " end: " << param2->getEnd() 
+    << " delta: " << param2->getDelta() << std::endl;
+  std::cout << "param3: start: " << param3->getStart() 
+    << " end: " << param3->getEnd() 
+    << " delta: " << param3->getDelta() << std::endl;
 
   // create parameter space builder
   opt::StandardParameterSpaceBuilder<TcoordType, TresultType> builder;
 
-  std::vector<opt::Parameter<TcoordType> > params;
+  std::vector<opt::Parameter<TcoordType> const*> params;
   params.push_back(param1);
   params.push_back(param2);
-  //params.push_back(param3);
+  params.push_back(param3);
 
   // build parameter space
   builder.buildParameterSpace();
@@ -84,6 +87,9 @@ int main ()
 
   // send an application into the grid
   parameterspace->accept(app);
+
+  delete param1;
+  delete param2;
 
   return 0;
 

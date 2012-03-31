@@ -65,6 +65,8 @@ namespace optimize
    * application to the parameter space with the \c execute function or just
    * use one of a CompositeIterators provided by liboptimizexx which might be
    * more convenient and easier to handle.\n
+   *
+   * \ingroup group_global_algos
    */
   template <typename Ctype, typename CresultData>
   class GlobalAlgorithm
@@ -84,15 +86,22 @@ namespace optimize
       //! destructor
       virtual ~GlobalAlgorithm() { }
       //! add a parameter or rather add an additional component to the grid
-      void addParameter(Parameter<Ctype> const param);
+      void addParameter(Parameter<Ctype> const* param);
       //! query function for parameters
-      std::vector<Parameter<Ctype> > const& getParameter() const;
+      std::vector<Parameter<Ctype> const*> const& getParameter() const;
       /*!
        * query function for parameter space
        *
        * \return Reference to a constant parameter space.
        */
       GridComponent<Ctype, CresultData> const& getParameterSpace() const;
+      /*!
+       * query function for the parameter space builder
+       *
+       * \return Reference to a constant parameter space builder.
+       */
+      ParameterSpaceBuilder<Ctype, CresultData> const&
+        getParameterSpaceBuilder() const;
 
     protected:
       //! constructor
@@ -105,7 +114,7 @@ namespace optimize
       //! constructor
       GlobalAlgorithm(GridComponent<Ctype, CresultData>* parameterspace, 
           ParameterSpaceBuilder<Ctype, CresultData>* builder,
-          std::vector<Parameter<Ctype> > parameters) :
+          std::vector<Parameter<Ctype> const*> parameters) :
           MparameterSpace(parameterspace), MparameterSpaceBuilder(builder),
           Mparameters(parameters) 
       { }
@@ -119,22 +128,22 @@ namespace optimize
        * The parameters of which the parameter space builder will put up the
        * grid.
        */
-      std::vector<Parameter<Ctype> > Mparameters;
+      std::vector<Parameter<Ctype> const*> Mparameters;
 
   }; // class template GlobalAlgorithm
 
   /* ======================================================================= */
   template <typename Ctype, typename CresultData>
   void GlobalAlgorithm<Ctype, CresultData>::addParameter(
-      Parameter<Ctype> const param) 
+      Parameter<Ctype> const* param) 
   {
-    OPTIMIZE_assert(param.valid(), "Invalid parameter.");
+    OPTIMIZE_assert(param->isValid(), "Invalid parameter.");
     Mparameters.push_back(param);
   }
 
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
-  std::vector<Parameter<Ctype> > const& 
+  std::vector<Parameter<Ctype> const*> const& 
   GlobalAlgorithm<Ctype, CresultData>::getParameter() const
   {
     return Mparameters;
@@ -146,6 +155,14 @@ namespace optimize
   GlobalAlgorithm<Ctype, CresultData>::getParameterSpace() const
   {
     return *MparameterSpace;
+  }
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  ParameterSpaceBuilder<Ctype, CresultData> const&
+  GlobalAlgorithm<Ctype, CresultData>::getParameterSpaceBuilder() const
+  {
+    return *MparameterSpaceBuilder;
   }
 
   /* ----------------------------------------------------------------------- */

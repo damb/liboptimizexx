@@ -65,7 +65,7 @@ HEADERS=$(shell find . -name \*.h)
 # in the binary version of the library
 # (see below for the configuration of a preinstantiated version of template
 # code)
-SRC=error.cc
+SRC=error.cc parameter.cc
 
 # place where we will copy header files
 INCINSTALLPATH=$(LOCINCLUDEDIR)/optimizexx
@@ -266,7 +266,7 @@ doxyview: $(DOXYWWWPATH)/html/index.html
 # delegate test targets
 # ---------------------
 #
-tests/%: tests/%.cc install-include liboptimizexx.a
+tests/%: tests/%.cc install
 	@cd tests; echo "#############################"; $(MAKE) -s $(notdir $@)
 
 # ----- END OF Makefile -----

@@ -116,7 +116,7 @@ namespace optimize
        * \param distr type of probability distribution
        */
       MonteCarlo(ParameterSpaceBuilder<Ctype, CresultData>* builder, 
-          std::vector<Parameter<Ctype> > const parameters,
+          std::vector<Parameter<Ctype> const*> const parameters,
           Edistribution distr=Normal, float const percent=5) :
           Tbase(0, builder, parameters), Mdistribution(distr),
           Mpercentage(percent)

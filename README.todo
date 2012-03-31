@@ -47,3 +47,9 @@ Implementation:
   A workaround could be to provide dimensionless Parameters which are a instance
   of a optimize::Parameter. Think about how to implement this facility
   convenientl.
+
+  SOLVED:
+  -------
+  Intoduced a dimensionless parameter with class DimensionlessParameter so that
+  a dimensionless parameter space grid is ready for usage now. Builder design
+  pattern in use (GoF p.151).
