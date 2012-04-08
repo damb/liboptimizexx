@@ -27,7 +27,7 @@
 \author Daniel Armbruster
 \since February 2012
 \date March 2012
-\version V0.1.1
+\version V0.1.2
 $Id$
 
   Contents of this page:
@@ -83,11 +83,16 @@ responsible for sending a concrete instance of an parameter space application
 through the parameter space following its appropriated rules. This is a great
 advantage because the <em>Visitor design pattern</em> (GoF p.331) allows us to
 define new operations or rather applications on a parameters space grid without
-changing the classes which represent the parameter space.
-
-
-
-
+changing the classes which represent the parameter space.\n
+Some global algorithms make use of concurrency since \a liboptimizexx comes
+along with a simple optimize::thread::ThreadPool implemented taking advantage
+of the <a href="http://en.wikipedia.org/wiki/Thread_pool_pattern">Thread Pool
+</a> design pattern. Threads were implemented using the
+<a href="http://www.boost.org/doc/libs/release/libs/thread/">Boost thread
+library</a>. Unfortunately while implementing this facility of \a liboptimizexx
+threads weren't implemented completely by compilers supporting the new C++0x
+standard. At the latest if this circumstances were resolved there will be
+switched to the STL thread functionalisms.
 */
 
 /*===========================================================================*/

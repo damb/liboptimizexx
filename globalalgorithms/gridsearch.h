@@ -29,7 +29,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 24/02/2012  V0.1  Daniel Armbruster
+ * 24/02/2012  V0.1   Daniel Armbruster
+ * 08/04/2012  V0.2   Make use of the threadpool take advantage of concurrency.
  * 
  * ============================================================================
  */
@@ -40,8 +41,8 @@
 #include <optimizexx/threadpool.h>
 #include <optimizexx/error.h>
  
-#ifndef _GRIDSEARCH_H_
-#define _GRIDSEARCH_H_
+#ifndef _OPTIMIZEXX_GRIDSEARCH_H_
+#define _OPTIMIZEXX_GRIDSEARCH_H_
 
 namespace optimize
 {
@@ -150,6 +151,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF gridsearch.h  ----- */
