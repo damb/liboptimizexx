@@ -40,7 +40,8 @@
 #include <ostream>
 #include <algorithm>
 #include <optimizexx/gridcomponent.h>
-#include <optimizexx/iterator.h>
+#include <optimizexx/forwarditerator.h>
+#include <optimizexx/reverseiterator.h>
 
 #ifndef _GRID_H_
 #define _GRID_H_
@@ -75,12 +76,10 @@ namespace optimize
       typedef GridComponent<Ctype, CresultData> Tbase; 
       //! Pointer to the base class.
       typedef GridComponent<Ctype, CresultData>* Tbase_ptr; 
-      //! Iterator for children.
+      //! Usual iterator for children of the grid.
       typedef typename Tbase::Titer Titer;
-      //! Constant iterator for children.
-      typedef typename 
-        std::list<GridComponent<Ctype, CresultData>* >::const_iterator 
-        Tconst_iter;
+      //! Reverse iterator for children of the grid.
+      typedef typename Tbase::Treverse_iter Treverse_iter;
 
     public:
       //! constructor
@@ -141,11 +140,25 @@ namespace optimize
         return Tbase::Composite;
       }
       //! Return an iterator pointing to the first child.
-      Titer begin() { return Mchildren.begin(); }
+      virtual Titer begin() { return Mchildren.begin(); }
       //! Return an iterator pointing to the last child.
-      Titer end() { return Mchildren.end(); }
+      virtual Titer end() { return Mchildren.end(); }
+      /*!
+       * Returns a reverse iterator referring to the last element of a
+       * composite.
+       */
+      virtual Treverse_iter rbegin() { return Mchildren.rbegin(); }
+      /*!
+       * Returns a reverse iterator referring to the first element of a
+       * composite.
+       */
+      virtual Treverse_iter rend() { return Mchildren.rend(); }
 
     private:
+      //! Constant iterator for children.
+      typedef typename 
+        std::list<GridComponent<Ctype, CresultData>* >::const_iterator 
+        Tconst_iter;
       //! List to store grids' children.
       std::list<Tbase_ptr> Mchildren;
       /*!
@@ -243,19 +256,34 @@ namespace optimize
   {
     if (Iter == id) 
     { 
-      return new Iterator<Ctype, CresultData>(
+      return new ForwardIterator<Ctype, CresultData>(
           const_cast<Grid<Ctype, CresultData>*>(this), type); 
     } else
     if (GridIter == id) 
     { 
-      return new GridIterator<Ctype, CresultData>(
+      return new ForwardGridIterator<Ctype, CresultData>(
           const_cast<Grid<Ctype, CresultData>*>(this), type); 
     } else
     if (NodeIter == id) 
     { 
-      return new NodeIterator<Ctype, CresultData>(
+      return new ForwardNodeIterator<Ctype, CresultData>(
           const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } 
+    } else
+    if (RevIter == id) 
+    { 
+      return new ReverseIterator<Ctype, CresultData>(
+          const_cast<Grid<Ctype, CresultData>*>(this), type); 
+    } else
+    if (RevGridIter == id) 
+    { 
+      return new ReverseGridIterator<Ctype, CresultData>(
+          const_cast<Grid<Ctype, CresultData>*>(this), type); 
+    } else
+    if (RevNodeIter == id) 
+    { 
+      return new ReverseNodeIterator<Ctype, CresultData>(
+          const_cast<Grid<Ctype, CresultData>*>(this), type); 
+    }
 
     return GridComponent<Ctype, CresultData>::createIterator(id, type);
   }

@@ -57,10 +57,13 @@ namespace optimize
    */
   enum EiteratorId
   {
-    Iter,     //!< usual iterator
-    GridIter, //!< only grid iterator
-    NodeIter, //!< only node iterator
-    NullIter  //!< degenerated iterator
+    Iter,         //!< usual iterator
+    GridIter,     //!< only grid iterator
+    NodeIter,     //!< only node iterator
+    RevIter,      //!< reverse iterator
+    RevGridIter,  //!< only grid reverse iterator
+    RevNodeIter,  //!< only node reverse iterator
+    NullIter      //!< degenerated iterator
   }; // enum EiteratorId
 
   //! Type of iteration.
@@ -100,6 +103,9 @@ namespace optimize
    * \param iter_first Iterator pointing to the initial element.
    * \param iter_last Iterator pointing to the final element. This must be
    * reachable from \a iter_first.
+   *
+   * \note Have a look at http://drdobbs.com/184401406 to improve
+   * implementation.
    */
   template <typename CcompositeIterator>
   unsigned int distance(CcompositeIterator& iter_first,
@@ -174,7 +180,7 @@ namespace optimize
    * (GoF p.266).\n
    *
    * Note that the functionalism of how the post-/pre-order iteration is
-   * delegated to 
+   * delegated to the iterator mementos.
    *
    * \ingroup group_iterator
    */
@@ -183,16 +189,17 @@ namespace optimize
   {
     public:
       typedef GridComponent<Ctype, CresultData>* Tcomp_ptr;
-      typedef typename GridComponent<Ctype,CresultData>::Titer Titer;
 
     public:
       virtual void first() { OPTIMIZE_illegal; }
       virtual void last() { OPTIMIZE_illegal; }
+      //! iterate to the next item in the container
       virtual void next()  { OPTIMIZE_illegal; }
+      //! query function if the iteration has finished
       virtual bool isDone() const = 0;
       /*!
        * Note that here returning a pointer is necessary because otherwise there
-       * couldn't be made any use of the polymorvic functionalism the parameter
+       * couldn't be made any use of the polymorphic functionalism the parameter
        * space composite is providing.\n
        *
        * IMPORTANT NOTE: For simpler syntax provide the same function returning
@@ -202,7 +209,7 @@ namespace optimize
        */
       virtual Tcomp_ptr currentItem() const = 0;
       //! destructor
-      virtual ~CompositeIterator() { delete MiterMemento; }
+      virtual ~CompositeIterator() { }
       //! pre-increment operator
       virtual CompositeIterator<Ctype, CresultData>& operator++() 
       { 
@@ -225,175 +232,16 @@ namespace optimize
       {
         OPTIMIZE_illegal;
       }
-      //! assignment operator
-      virtual CompositeIterator<Ctype,CresultData>&  operator=(
-          CompositeIterator<Ctype, CresultData> const& rhs);
 
     protected:
-      //! constructor
-      CompositeIterator(Tcomp_ptr root, bool done=false,
-          EiterationType type=PostOrder) : Mcomponent(root), MisDone(done),
-          MiterationType(type)
-      { 
-        setIterationType(type);
-      }
       /*!
        * Parameterized factory method to create the correct iteration memento.
        * Factory method design pattern in use (GoF p.107).
        */
-      void setIterationType(EiterationType type);
+      IteratorMemento<Ctype, CresultData>* setIterationType(
+          EiterationType type);
 
-    protected:
-      //! pointer to the root element of the iteration
-      Tcomp_ptr Mcomponent;
-      //! variable to save wether iteration is finished
-      bool MisDone;
-      /*!
-       * As suggested at GoF p.271 here the memento design pattern is in use to
-       * capture the state of an iteration within a IteratorMemento. The
-       * iterator stores the memento internally. The functionalism of pre- or
-       * rather post-order iteration is delegated to the memento.
-       */
-      IteratorMemento<Ctype, CresultData>* MiterMemento;
-      //! type of iteration
-      EiterationType MiterationType;
-
-  }; // class CompositeIterator
-
-  /* ======================================================================= */
-  /*!
-   * Iterator to traverse the entire parameter space including grids and nodes
-   * (post- and pre-ordered depending an).
-   *
-   * \ingroup group_iterator
-   */
-  template <typename Ctype, typename CresultData>
-  class Iterator : public CompositeIterator<Ctype, CresultData>
-  {
-    public: 
-      typedef CompositeIterator<Ctype, CresultData> Tbase;
-
-    public:
-      /*!
-       * constructor
-       *
-       * \param root Pointer to the composite creating the iterator.
-       * \param type Type of the iteration.
-       */
-      Iterator(typename Tbase::Tcomp_ptr root, EiterationType type=PostOrder);
-      /*!
-       * copy constructor
-       * 
-       * \param rhs argument to copy
-       */
-      Iterator(Iterator<Ctype, CresultData> const& rhs) : 
-        Tbase(rhs.Mcomponent, rhs.MisDone, rhs.MiterationType)
-      { }
-      //! set iterator to first element in parameter space composite (grid)
-      virtual void first();
-      //! go to the next item
-      virtual void next();
-      //! query function if iteration is finished
-      virtual bool isDone() const { return Tbase::MisDone; }
-      //! query function for current item
-      virtual typename Tbase::Tcomp_ptr currentItem() const
-      {
-        return *Tbase::MiterMemento->getCurrentIterator();
-      }
-
-  }; // class Iterator
-
-  /* ======================================================================= */
-  /*!
-   * Iterator to traverse the parameter space only iterating over grids.
-   *
-   * \todo Not tested yet.
-   *
-   * \ingroup group_iterator
-   */
-  template <typename Ctype, typename CresultData>
-  class GridIterator : public CompositeIterator<Ctype, CresultData>
-  {
-    public: 
-      typedef CompositeIterator<Ctype, CresultData> Tbase;
-
-    public:
-      //! constructor
-      GridIterator(typename Tbase::Tcomp_ptr root,
-          EiterationType type=PostOrder);
-      /*!
-       * copy constructor
-       * 
-       * \param rhs argument to copy
-       */
-      GridIterator(GridIterator<Ctype, CresultData> const& rhs) : 
-        Tbase(rhs.Mcomponent, rhs.MisDone, rhs.MiterationType)
-      { }
-      //! set iterator to first grid in parameter space composite (grid)
-      virtual void first();
-      //! go to the next grid
-      virtual void next();
-      //! query function if iteration is finished
-      virtual bool isDone() const { return Tbase::MisDone; }
-      //! query function for current grid
-      virtual typename Tbase::Tcomp_ptr currentItem() const
-      {
-        return *Tbase::MiterMemento->getCurrentIterator();
-      }
-
-  }; // class GridIterator
-
-  /* ======================================================================= */
-  /*!
-   * Iterator to traverse the parameter space only iterating over nodes.
-   *
-   * \ingroup group_iterator
-   */
-  template <typename Ctype, typename CresultData>
-  class NodeIterator : public CompositeIterator<Ctype, CresultData>
-  {
-    public: 
-      typedef CompositeIterator<Ctype, CresultData> Tbase;
-
-    public:
-      //! constructor
-      NodeIterator(typename Tbase::Tcomp_ptr root,
-          EiterationType type=PostOrder);
-      /*!
-       * copy constructor
-       * 
-       * \param rhs argument to copy
-       */
-      NodeIterator(NodeIterator<Ctype, CresultData> const& rhs) : 
-        Tbase(rhs.Mcomponent, rhs.MisDone, rhs.MiterationType)
-      { }
-      //! set iterator to first node in parameter space composite (grid)
-      virtual void first();
-      //! set iterator to last node in parameter space composite (grid)
-      virtual void last();
-      //! go to the next node
-      virtual void next();
-      //! query function if iteration is finished
-      virtual bool isDone() const { return Tbase::MisDone; }
-      //! query function for current node
-      virtual typename Tbase::Tcomp_ptr currentItem() const
-      {
-        return *Tbase::MiterMemento->getCurrentIterator();
-      }
-      //! equal to operator
-      virtual bool operator==(
-          NodeIterator<Ctype, CresultData> const& rhs);
-      //! unequal to operator
-      virtual bool operator!=(
-          NodeIterator<Ctype, CresultData> const& rhs);
-      //! dereference operator
-      virtual GridComponent<Ctype, CresultData>* operator*();
-      //! pre-incrementation operator
-      virtual NodeIterator<Ctype, CresultData>& operator++();
-      //! post-increment operator
-      virtual NodeIterator<Ctype, CresultData> operator++(int);
-
-  }; // class NodeIterator
+  }; // class template CompositeIterator
 
   /* ======================================================================= */
   /*!
@@ -406,12 +254,13 @@ namespace optimize
   template <typename Ctype, typename CresultData>
   class NullIterator : public CompositeIterator<Ctype, CresultData>
   {
-    public: 
-      typedef CompositeIterator<Ctype, CresultData> Tbase;
+    public:
+      typedef typename CompositeIterator<Ctype, CresultData>::Tcomp_ptr
+        Tcomp_ptr;
 
     public:
       //! constructor
-      NullIterator(typename Tbase::Tcomp_ptr root) : Tbase(root, true) { }
+      NullIterator(Tcomp_ptr root) : Mcomp_ptr(root) { }
       /*!
        * Because NullIterator is a degenerated iterator always will return
        * true.
@@ -425,304 +274,36 @@ namespace optimize
        * 
        * \return The NullIterator's originator.
        */
-      virtual typename Tbase::Tcomp_ptr currentItem() const 
-      { 
-        return Tbase::Mcomponent;
-      }
+      virtual Tcomp_ptr currentItem() const {  return Mcomp_ptr; }
 
-  }; // class NullIterator
+    private:
+      Tcomp_ptr Mcomp_ptr;
+
+  }; // class template NullIterator
 
   /* ======================================================================= */
   // function definitions of class CompositeIterator
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
-  CompositeIterator<Ctype,CresultData>&  
-  CompositeIterator<Ctype, CresultData>::operator=(
-          CompositeIterator<Ctype, CresultData> const& rhs)
-  {
-    if (this != &rhs)
-    {
-      Mcomponent = rhs.Mcomponent;
-      MisDone = rhs.MisDone;
-      delete MiterMemento;
-      this->setIterationType(rhs.MiterationType);
-      MiterationType = rhs.MiterationType;
-    }
-    return *this;
-  } // function CompositeIterator<Ctype, CresultData>::operator=()
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void CompositeIterator<Ctype, CresultData>::setIterationType(
+  IteratorMemento <Ctype, CresultData>*
+  CompositeIterator<Ctype, CresultData>::setIterationType(
       EiterationType type)
   {
+    IteratorMemento<Ctype, CresultData>* iter_memento = 0;
     //! up to now only post-ordered iteration is implemented.
     if (PostOrder == type) 
     { 
-      MiterMemento = new PostIterationMemento<Ctype, CresultData>;
+      iter_memento = new PostIterationMemento<Ctype, CresultData>;
     } else
     if (PreOrder == type) 
     { 
-      MiterMemento = new PreIterationMemento<Ctype, CresultData>;
+      iter_memento = new PreIterationMemento<Ctype, CresultData>;
     }
     else { OPTIMIZE_abort("Illegal iteration type."); }
+
+    return iter_memento;
+
   } // function CompositeIterator<Ctype, CresultData>::setIterationType
-
-  /* ======================================================================= */
-  // function definitions of class Iterator
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  Iterator<Ctype, CresultData>::Iterator(typename Tbase::Tcomp_ptr root,
-      EiterationType type) : Tbase(root, false, type)
-  { }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void Iterator<Ctype, CresultData>::first()
-  {
-    Tbase::MiterMemento->reset();
-    if (Tbase::Mcomponent->begin() != Tbase::Mcomponent->end())
-    {
-      Tbase::MisDone = false;
-      Tbase::MiterMemento->pushState(IterationState<Ctype, CresultData>(
-            Tbase::Mcomponent->begin(), Tbase::Mcomponent->end()));
-    } else
-    {
-      Tbase::MisDone = true;
-    }
-  } // function Iterator<Ctype, CresultData>::first
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void Iterator<Ctype, CresultData>::next()
-  {
-    if (! (*Tbase::MiterMemento->getCurrentIterator())->createIterator(
-          Iter)->isDone())
-    {
-      GridComponent<Ctype, CresultData>* comp_ptr = 
-          *Tbase::MiterMemento->getCurrentIterator();
-      Tbase::MiterMemento->pushState(
-          IterationState<Ctype, CresultData>(comp_ptr->begin(),
-          comp_ptr->end()));
-    } else
-    {
-      Tbase::MiterMemento->next();
-        
-      while (! Tbase::MiterMemento->empty() && 
-        Tbase::MiterMemento->getState().isEnd())
-      {
-        Tbase::MiterMemento->popState();
-        if (! Tbase::MiterMemento->empty())
-        {
-          Tbase::MiterMemento->next();
-        }
-      }
-      if (Tbase::MiterMemento->empty())
-      {
-        Tbase::MisDone = true;
-      }
-    }
-  } // function Iterator<Ctype, CresultData>::next
-
-  /* ======================================================================= */
-  // function definitions of class GridIterator
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  GridIterator<Ctype, CresultData>::GridIterator(
-      typename Tbase::Tcomp_ptr root, EiterationType type) : 
-      Tbase(root, false, type)
-  { }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void GridIterator<Ctype, CresultData>::first()
-  {
-    Tbase::MiterMemento->reset();
-    if (Tbase::Mcomponent->begin() != Tbase::Mcomponent->end())
-    {
-      Tbase::MisDone = false;
-      Tbase::MiterMemento->pushState(IterationState<Ctype, CresultData>(
-            Tbase::Mcomponent->begin(), Tbase::Mcomponent->end()));
-      next();
-    } else
-    {
-      Tbase::MisDone = true;
-    }
-  } // function GridIterator<Ctype, CresultData>::first()
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void GridIterator<Ctype, CresultData>::next()
-  {
-    if (! (*Tbase::MiterMemento->getCurrentIterator())->createIterator(
-          GridIter)->isDone())
-    {
-      GridComponent<Ctype, CresultData>* comp_ptr = 
-          *Tbase::MiterMemento->getCurrentIterator();
-      Tbase::MiterMemento->pushState(
-          IterationState<Ctype, CresultData>(comp_ptr->begin(),
-          comp_ptr->end()));
-    } else
-    {
-      Tbase::MiterMemento->next();
-        
-      while (! Tbase::MiterMemento->empty() && 
-          Tbase::MiterMemento->getState().isEnd())
-      {
-        Tbase::MiterMemento->popState();
-        if (! Tbase::MiterMemento->empty())
-        {
-          Tbase::MiterMemento->next();
-        }
-      }
-      if (Tbase::MiterMemento->empty())
-      {
-        Tbase::MisDone = true;
-      }
-    }
-    while (!Tbase::MisDone && 
-        (*Tbase::MiterMemento->getCurrentIterator())->getComponentType() !=
-        GridComponent<Ctype, CresultData>::Composite)
-    {
-      Tbase::MiterMemento->next();
-    }
-  } // function GridIterator<Ctype, CresultData>::next
-
-  /* ======================================================================= */
-  // function definitions of class NodeIterator
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  NodeIterator<Ctype, CresultData>::NodeIterator(
-      typename Tbase::Tcomp_ptr root, EiterationType type) : 
-      Tbase(root, false, type)
-  { }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void NodeIterator<Ctype, CresultData>::first()
-  {
-    Tbase::MiterMemento->reset();
-    if (Tbase::Mcomponent->begin() != Tbase::Mcomponent->end())
-    {
-      Tbase::MisDone = false;
-      Tbase::MiterMemento->pushState(IterationState<Ctype, CresultData>(
-            Tbase::Mcomponent->begin(), Tbase::Mcomponent->end()));
-      while (!Tbase::MisDone && 
-          (*Tbase::MiterMemento->getCurrentIterator())->getComponentType() !=
-          GridComponent<Ctype, CresultData>::Leaf)
-      {
-        next();
-      }
-    } else
-    {
-      Tbase::MisDone = true;
-    }
-  } // function NodeIterator<Ctype, CresultData>::first()
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void NodeIterator<Ctype, CresultData>::last()
-  {
-    Tbase::MiterMemento->reset();
-    if (Tbase::Mcomponent->begin() != Tbase::Mcomponent->end())
-    {
-      Tbase::MisDone = false;
-      Tbase::MiterMemento->pushState(IterationState<Ctype, CresultData>(
-            Tbase::Mcomponent->begin(), Tbase::Mcomponent->end()));
-      // wind forward
-      while (!Tbase::MisDone)
-      {
-        next();
-      }
-    } else
-    {
-      Tbase::MisDone = true;
-    }
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  void NodeIterator<Ctype, CresultData>::next()
-  {
-    if (! (*Tbase::MiterMemento->getCurrentIterator())->createIterator(
-          NodeIter)->isDone())
-    {
-      GridComponent<Ctype, CresultData>* comp_ptr = 
-          *Tbase::MiterMemento->getCurrentIterator();
-      Tbase::MiterMemento->pushState(
-          IterationState<Ctype, CresultData>(comp_ptr->begin(),
-          comp_ptr->end()));
-    } else
-    {
-      Tbase::MiterMemento->next();
-        
-      while (! Tbase::MiterMemento->empty() && 
-          Tbase::MiterMemento->getState().isEnd())
-      {
-        Tbase::MiterMemento->popState();
-        if (! Tbase::MiterMemento->empty())
-        {
-          Tbase::MiterMemento->next();
-        }
-      }
-
-      if (Tbase::MiterMemento->empty())
-      {
-        Tbase::MisDone = true;
-      }
-    }
-
-    while (!Tbase::MisDone && 
-        (*Tbase::MiterMemento->getCurrentIterator())->getComponentType() !=
-        GridComponent<Ctype, CresultData>::Leaf)
-    {
-      Tbase::MiterMemento->next();
-    }
-  } // function NodeIterator<Ctype, CresultData>::next
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  bool NodeIterator<Ctype, CresultData>::operator==(
-      NodeIterator<Ctype, CresultData> const& rhs)
-  {
-    return Tbase::MiterMemento->getCurrentIterator() == 
-      rhs.MiterMemento->getCurrentIterator();
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  bool NodeIterator<Ctype, CresultData>::operator!=(
-      NodeIterator<Ctype, CresultData> const& rhs)
-  {
-    return !(*this == rhs);
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  NodeIterator<Ctype, CresultData>& 
-  NodeIterator<Ctype, CresultData>::operator++()
-  {
-    next();
-    return *this;
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  NodeIterator<Ctype, CresultData> 
-  NodeIterator<Ctype, CresultData>::operator++(int)
-  {
-    NodeIterator<Ctype, CresultData> tmp(*this);
-    operator++();
-    return tmp;
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  GridComponent<Ctype, CresultData>*  
-  NodeIterator<Ctype, CresultData>::operator*()
-  {
-    return currentItem();
-  }
 
   /* ----------------------------------------------------------------------- */
 

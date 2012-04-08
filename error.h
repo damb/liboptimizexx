@@ -38,8 +38,8 @@
  * ============================================================================
  */
 
-#ifndef _OPTIMIZEERROR_H_
-#define _OPTIMIZEERROR_H_
+#ifndef _OPTIMIZEXX_ERROR_H_
+#define _OPTIMIZEXX_ERROR_H_
 
 #include <iostream>
 
@@ -200,6 +200,6 @@ namespace optimize
 #define OPTIMIZE_nonfatal_assert(F,C,M,V) \
   if (F) { OPTIMIZE_report_assert(C,M,V) } else { OPTIMIZE_assert(C,M) }
 
-#endif // _ERROR_H_ (include guard)
+#endif // include guard
 
 /* ----- END OF error.h ----- */

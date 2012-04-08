@@ -23,7 +23,7 @@
 # REVISIONS and CHANGES
 # 01/03/2012	V0.1	Daniel Armbruster
 # ----------------------------------------------------------------------------
-CPPFLAGS=-I$(LOCINCLUDEDIR) 
+CPPFLAGS=-I$(LOCINCLUDEDIR) $(FLAGS)
 LDFLAGS=-L$(LOCLIBDIR) 
 
 CXXFLAGS=-fhonor-std -Wall $(FLAGS)
@@ -45,6 +45,6 @@ $(addsuffix .o,$(STANDARDTEST)): %.o: %.cc
 
 $(STANDARDTEST): %: %.o 	
 	@echo -e "\n[ Compiling test program: $@ ]\n"	
-	@$(CXX) -o $@ $< $(LDFLAGS) -loptimizexx
+	@$(CXX) -o $@ $< $(LDFLAGS) -loptimizexx -lboost_thread
 
 # ----- END OF Makefile -----

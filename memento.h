@@ -35,57 +35,13 @@
  */
 
 #include <deque>
+#include <optimizexx/iterationstate.h>
 
 #ifndef _MEMENTO_H_
 #define _MEMENTO_H_
 
 namespace optimize
 {
-  // forward declaration
-  template <typename Ctype, typename CresultData> class Grid;
-
-  /* ======================================================================= */
-  /*!
-   * Provides a data structure to save an iteration state. Iteration states are
-   * handled by IterationMemento. Note that any iterator direcly works on the
-   * memento.
-   *
-   * IMPORTANT NOTE: Due to reasons of an increased transparancy and to have an
-   * iterator for any kind of grid composite it would be more convenient to
-   * introduce a template parameter for iterators of composites. This would
-   * effect especially the line containing
-   * 
-   * typedef typename Grid<Ctype, CresultData>::Titer Titer;
-   * 
-   * 
-   * \ingroup group_iterator
-   */
-  template <typename Ctype, typename CresultData>
-  class IterationState
-  {
-    public:
-      typedef typename Grid<Ctype, CresultData>::Titer Titer;
-
-    public:
-      //! constructor
-      IterationState(Titer iter, Titer end_iter) :
-        Miter(iter), Mend_iter(end_iter)
-      { }
-      //! query function for the iterator in the current iteration state
-      Titer& getIterator() { return Miter; }
-      //! test if iteration is finished
-      bool isEnd() const { return Miter == Mend_iter; }
-      //! increment iterator in the current iteration state
-      void next() { ++Miter; }
-
-    private:
-      //! begin iterator
-      Titer Miter;
-      //! end iterator
-      Titer Mend_iter;
-
-  }; // class IterationState
-
   /* ======================================================================= */
   /*!
    * Abstract base memento class of the memento design pattern (GoF p.283)
@@ -106,7 +62,7 @@ namespace optimize
   class IteratorMemento
   {
     public:
-      typedef IterationState<Ctype, CresultData> Tstate;
+      typedef IterationState<Ctype, CresultData>* Tstate;
 
     public:
       /*!
@@ -115,9 +71,9 @@ namespace optimize
        * \param state iteration state
        */
       virtual void pushState(
-          IterationState<Ctype, CresultData> const& state) = 0;
+          IterationState<Ctype, CresultData>& state) = 0;
       //! delete the current state
-      virtual void popState() { MstateStack.pop_back(); }
+      virtual void popState();
       /*!
        * query function for the current state
        *
@@ -132,11 +88,11 @@ namespace optimize
       virtual typename IterationState<Ctype, CresultData>::Titer&
         getCurrentIterator();
       //! proceed with iteration
-      virtual void next() { MstateStack.back().next(); }
+      virtual void next() { MstateStack.back()->next(); }
       //! query function if iteration state container is empty
       virtual bool empty() const { return MstateStack.empty(); }
       //! empty the memento's stack
-      void reset() { MstateStack.clear(); }
+      void reset();
 
     protected:
       //! constructor
@@ -172,7 +128,7 @@ namespace optimize
        *
        * \param state iteration state
        */
-      virtual void pushState(IterationState<Ctype, CresultData> const& state);
+      virtual void pushState(IterationState<Ctype, CresultData>& state);
 
   }; // class PostIterationMemento
 
@@ -196,7 +152,7 @@ namespace optimize
        *
        * \param state iteration state
        */
-      virtual void pushState(IterationState<Ctype, CresultData> const& state);
+      virtual void pushState(IterationState<Ctype, CresultData>& state);
 
   }; // class PostIterationMemento
 
@@ -207,7 +163,27 @@ namespace optimize
   typename IterationState<Ctype, CresultData>::Titer&
   IteratorMemento<Ctype, CresultData>::getCurrentIterator()
   {
-    return MstateStack.back().getIterator();
+    return MstateStack.back()->getIterator();
+  }
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  void IteratorMemento<Ctype, CresultData>::popState()
+  { 
+    delete MstateStack[MstateStack.size()-1];
+    MstateStack.pop_back();
+  }
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  void IteratorMemento<Ctype, CresultData>::reset()
+  {
+    for (typename std::deque<Tstate>::iterator it(MstateStack.begin());
+        it != MstateStack.end(); ++it)
+    {
+      delete *it;
+    }
+    MstateStack.clear();
   }
 
   /* ======================================================================= */
@@ -215,9 +191,9 @@ namespace optimize
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
   void PostIterationMemento<Ctype, CresultData>::pushState(
-      IterationState<Ctype, CresultData> const& state)
+      IterationState<Ctype, CresultData>& state)
   {
-    Tbase::MstateStack.push_front(state);
+    Tbase::MstateStack.push_front(&state);
   }
 
   /* ======================================================================= */
@@ -225,9 +201,9 @@ namespace optimize
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
   void PreIterationMemento<Ctype, CresultData>::pushState(
-      IterationState<Ctype, CresultData> const& state)
+      IterationState<Ctype, CresultData>& state)
   {
-    Tbase::MstateStack.push_back(state);
+    Tbase::MstateStack.push_back(&state);
   }
 
   /* ----------------------------------------------------------------------- */

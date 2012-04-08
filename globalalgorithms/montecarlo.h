@@ -171,8 +171,8 @@ namespace optimize
       Tbase::MparameterSpace->createIterator(NodeIter);
     iter_last->last();
     unsigned int num_elements = distance(
-        *dynamic_cast<NodeIterator<Ctype, CresultData>*>(iter),
-        *dynamic_cast<NodeIterator<Ctype, CresultData>*>(iter_last));
+        *dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter),
+        *dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter_last));
     delete iter_last;
 
     std::vector<unsigned int> indices((Mpercentage/100.)*num_elements);
@@ -218,7 +218,8 @@ namespace optimize
         cit != indices.end(); ++cit)
     {
       iter->first();
-      advance(*dynamic_cast<NodeIterator<Ctype, CresultData>*>(iter), *cit);
+      advance(*dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter),
+          *cit);
       iter->currentItem()->accept(v);
     }
     delete iter;

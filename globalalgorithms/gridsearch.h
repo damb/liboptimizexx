@@ -37,6 +37,7 @@
 #include <vector>
 #include <optimizexx/globalalgorithm.h>
 #include <optimizexx/parameter.h>
+#include <optimizexx/threadpool.h>
 #include <optimizexx/error.h>
  
 #ifndef _GRIDSEARCH_H_
@@ -93,7 +94,9 @@ namespace optimize
        */
       virtual void constructParameterSpace();
       /*!
-       * Apply an application to the parameter space grid.
+       * Apply an application to the parameter space grid. Makes use of the \a
+       * liboptimizexx thread pool to increase calculation velocity due to
+       * concurrency.
        *
        * \param v Reference to a ParameterSpaceVisitor or rather application.
        * For further information on how to implement an application for the
@@ -120,8 +123,27 @@ namespace optimize
       ParameterSpaceVisitor<Ctype, CresultData>& v)
   {
     OPTIMIZE_assert(Tbase::MparameterSpace != 0, "Missing parameter space.");
-    // Note, that the visitor design pattern is in use (GoF p.315)
-    Tbase::MparameterSpace->accept(v);
+
+    size_t num_tasks = 0;
+
+    // create thread pool for parallel computation
+    typename thread::ThreadPool<Ctype, CresultData>* pool =
+      new typename thread::ThreadPool<Ctype, CresultData>(v);
+    pool->initialize();
+
+    CompositeIterator<Ctype, CresultData>* iter = 
+      Tbase::MparameterSpace->createIterator(NodeIter);
+    //! add tasks (node pointers) to pool task queue
+    for (iter->first(); !iter->isDone(); iter->next())
+    {
+      pool->addTask(iter->currentItem());
+      ++num_tasks;
+    }
+
+    // wait until all threads finished
+    while(num_tasks != pool->getCompletedTasksCount()) { }
+
+    delete pool;
   }
 
   /* ----------------------------------------------------------------------- */

@@ -79,7 +79,10 @@ int main ()
 
   // test usual iterator
   
-  std::cout << "Testing usual parameter space iterator: " << std::endl;
+
+  std::cout << "---------------------------------------" << std::endl;
+  std::cout << "Testing usual parameter space iterator:" << std::endl;
+  std::cout << "---------------------------------------" << std::endl;
   opt::CompositeIterator<TcoordType, TresultType>* it = 
     parameterSpace->createIterator(opt::Iter);
 
@@ -100,7 +103,9 @@ int main ()
 
   delete it;
 
-  std::cout << "Testing node iterator: " << std::endl;
+  std::cout << "----------------------" << std::endl;
+  std::cout << "Testing node iterator:" << std::endl;
+  std::cout << "----------------------" << std::endl;
   it = parameterSpace->createIterator(opt::NodeIter);
 
   it->first();
@@ -128,19 +133,58 @@ int main ()
 
   delete it;
 
-  std::cout << "Testing node iterator (overloaded operators): " << std::endl;
+  std::cout << "------------------------------" << std::endl;
+  std::cout << "Testing reverse node iterator:" << std::endl;
+  std::cout << "------------------------------" << std::endl;
+  it = parameterSpace->createIterator(opt::RevNodeIter);
+
+  it->first();
+
+  while (!it->isDone())
+  {
+    std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+    std::vector<std::string> const& ids = it->currentItem()->getCoordinateId();
+
+    for (std::vector<TcoordType>::const_iterator cit(c.begin());
+        cit != c.end(); ++cit)
+    {
+      std::cout << *cit << " ";
+    }
+
+    for (std::vector<std::string>::const_iterator cit(ids.begin());
+        cit != ids.end(); ++cit)
+    {
+      std::cout << *cit << " ";
+    }
+    std::cout << std::endl;
+
+    it->next();
+  }
+
+  delete it;
+
+
+  std::cout << "---------------------------------------------" << std::endl;
+  std::cout << "Testing node iterator (overloaded operators):" << std::endl;
+  std::cout << "---------------------------------------------" << std::endl;
   it = parameterSpace->createIterator(opt::NodeIter);
   
   opt::CompositeIterator<TcoordType, TresultType>* end = 
     parameterSpace->createIterator(opt::NodeIter);
   end->last();
 
+
+  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+  // using operator!=() produces segmenation fault 
+  // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
   // unconvenient but working solution
   // polymorphism does not work anymore if dereferencing the pointer to the
   // iterator -> dynamic cast necessary
-  for (it->first(); 
-      *dynamic_cast<opt::NodeIterator<TcoordType, TresultType>*>(it)!=
-      *dynamic_cast<opt::NodeIterator<TcoordType, TresultType>*>(end); ++(*it))
+/*  for (it->first(); 
+      *dynamic_cast<opt::ForwardNodeIterator<TcoordType, TresultType>*>(it)!=
+      *dynamic_cast<opt::ForwardNodeIterator<TcoordType, TresultType>*>(end);
+      ++(*it))*/
+  for (it->first(); !it->isDone(); ++(*it))
   {
     std::vector<TcoordType> const& c = (**it)->getCoordinates();
     std::vector<std::string> const& ids = (**it)->getCoordinateId();

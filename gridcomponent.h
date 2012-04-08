@@ -82,11 +82,16 @@ namespace optimize
         Leaf,
         Composite
       };
-      //! Iterator for the children.
-      typedef typename std::list<GridComponent<Ctype, CresultData>* >::iterator
+      //! Usual iterator for the children of a composite.
+      typedef typename std::list<GridComponent<Ctype, CresultData>*>::iterator
         Titer;
+      //! Reverse iterator for children of a composite.
+      typedef typename std::list<
+        GridComponent<Ctype, CresultData>*>::reverse_iterator Treverse_iter;
 
     public:
+      //! destructor
+      virtual ~GridComponent() { }
       /*! 
        * Abstract visitor acceptance function for a parameter space visitor.
        * Note that here the visitor design pattern is in use (GoF p.315)
@@ -133,12 +138,20 @@ namespace optimize
       virtual CresultData const& getResultData() const { OPTIMIZE_illegal; }
       //! Set the result data of the grid component.
       virtual void setResultData(CresultData const data) { OPTIMIZE_illegal; }
-      //! Return an iterator pointing to the first child.
+      //! Returns an iterator pointing to the first child.
       virtual Titer begin() { OPTIMIZE_illegal; }
-      //! Return an iterator pointing to the last child.
+      //! Returns an iterator pointing to the last child.
       virtual Titer end() { OPTIMIZE_illegal; }
-      //! destructor
-      virtual ~GridComponent() { }
+      /*!
+       * Returns a reverse iterator referring to the last element of a
+       * composite.
+       */
+      virtual Treverse_iter rbegin() { OPTIMIZE_illegal; }
+      /*!
+       * Returns a reverse iterator referring to the first element of a
+       * composite.
+       */
+      virtual Treverse_iter rend() { OPTIMIZE_illegal; }
 
       //! Set the parent of a grid component.
       void setParent(GridComponent<Ctype, CresultData>* p) { Mparent = p; }

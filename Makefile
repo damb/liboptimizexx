@@ -102,7 +102,7 @@ endif
 # compiler and preprocessor flags
 # -------------------------------
 FLAGS=-march=native -O2 -fno-reorder-blocks -fno-reorder-functions
-FLAGS+=$(MYFLAGS) -fPIC -pipe 
+FLAGS+=$(MYFLAGS) -fPIC -pipe -std=c++0x
 CXXFLAGS+=-Wall $(FLAGS)
 LDFLAGS=$(addprefix -L,$(LOCLIBDIR))
 CPPFLAGS=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)

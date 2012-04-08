@@ -36,8 +36,8 @@
 
 #include <ostream>
 
-#ifndef _APPLICATION_H_
-#define _APPLICATION_H_
+#ifndef _OPTIMIZEXX_APPLICATION_H_
+#define _OPTIMIZEXX_APPLICATION_H_
 
 namespace optimize
 {
@@ -123,6 +123,6 @@ namespace optimize
 
 } // namespace optimize
  
-#endif
+#endif // include guard
 
 /* ----- END OF application.h  ----- */
