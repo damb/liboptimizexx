@@ -88,8 +88,17 @@ namespace optimize
         { }
         //! add a new task to the task queue
         void addTask(Ctask& task);
-        //! query function for the next function in the task queue
+        //! query function for the next task in the task queue
         Ctask& waitAndPopTask();
+        /*!
+         * query function for the next task in the task queue
+         * In contrast to optimize::thread::Fifo::waitAndPopTask this function
+         * does not stop the thread trying to pop a task.
+         *
+         * \param reference to the task which is set if pop had been successful
+         * \return if pop was successful
+         */
+        bool tryAndPopTask(Ctask& popped_task);
         //! query function if task queue is empty
         bool empty() const;
         //! query function for number of popped tasks
@@ -148,17 +157,19 @@ namespace optimize
             {
               while (Mactive) 
               { 
-                GridComponent<Ctype, CresultData>* comp_ptr =
-                  Mtasks.waitAndPopTask(); 
-                if (GridComponent<Ctype, CresultData>::Leaf ==
-                    comp_ptr->getComponentType())
+                GridComponent<Ctype, CresultData>* comp_ptr = 0;
+                if(Mtasks.tryAndPopTask(comp_ptr))
                 {
-                  Mapp->operator()(dynamic_cast<Node<Ctype, CresultData>*>(
-                        comp_ptr));
-                } else
-                {
-                  Mapp->operator()(dynamic_cast<Grid<Ctype, CresultData>*>(
-                        comp_ptr));
+                  if (GridComponent<Ctype, CresultData>::Leaf ==
+                      comp_ptr->getComponentType())
+                  {
+                    Mapp->operator()(dynamic_cast<Node<Ctype, CresultData>*>(
+                          comp_ptr));
+                  } else
+                  {
+                    Mapp->operator()(dynamic_cast<Grid<Ctype, CresultData>*>(
+                          comp_ptr));
+                  }
                 }
               }
             }
@@ -243,6 +254,21 @@ namespace optimize
 
     /* --------------------------------------------------------------------- */
     template <typename Ctask>
+    bool Fifo<Ctask>::tryAndPopTask(Ctask& popped_task)
+    {
+      boost::lock_guard<boost::mutex> lock(Mmutex);
+      if (Mqueue.empty())
+      {
+        return false;
+      }
+      popped_task = Mqueue.front();
+      Mqueue.pop();
+      ++MnumPopped;
+      return true;
+    }
+
+    /* --------------------------------------------------------------------- */
+    template <typename Ctask>
     size_t const& Fifo<Ctask>::getNumPoppedTasks()
     {
       boost::lock_guard<boost::mutex> lock(Mmutex);
@@ -256,8 +282,6 @@ namespace optimize
     ThreadPool<Ctype, CresultData>::~ThreadPool()
     {
       Mactive = false;
-      //! \todo Not the clean way
-      Mworkers.interrupt_all();
       Mworkers.join_all();
     }
 
