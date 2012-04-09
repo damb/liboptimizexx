@@ -39,8 +39,8 @@
 #include <optimizexx/gridcomponent.h>
 
 
-#ifndef _NODE_H_
-#define _NODE_H_
+#ifndef _OPTIMIZEXX_NODE_H_
+#define _OPTIMIZEXX_NODE_H_
 
 namespace optimize
 {
@@ -150,6 +150,6 @@ namespace optimize
 
 } // namespace optimize
  
-#endif
+#endif // include guard
 
 /* ----- END OF node.h  ----- */

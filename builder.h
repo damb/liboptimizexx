@@ -38,8 +38,8 @@
 #include <optimizexx/gridcomponent.h>
 #include <optimizexx/parameter.h>
  
-#ifndef _BUILDER_H_
-#define _BUILDER_H_
+#ifndef _OPTIMIZEXX_BUILDER_H_
+#define _OPTIMIZEXX_BUILDER_H_
 
 namespace optimize
 {
@@ -120,6 +120,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF builder.h  ----- */

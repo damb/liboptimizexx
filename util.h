@@ -34,8 +34,8 @@
  * ============================================================================
  */
  
-#ifndef _UTIL_H_
-#define _UITL_H_
+#ifndef _OPTIMIZEXX_UTIL_H_
+#define _OPTIMIZEXX_UITL_H_
 
 namespace optimize
 {

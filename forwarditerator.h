@@ -36,8 +36,8 @@
  
 #include <optimizexx/iterator.h>
 
-#ifndef _FORWARDITERATOR_H_
-#define _FORWARDITERATOR_H_
+#ifndef _OPTIMIZEXX_FORWARDITERATOR_H_
+#define _OPTIMIZEXX_FORWARDITERATOR_H_
 
 namespace optimize
 {

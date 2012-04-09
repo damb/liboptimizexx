@@ -36,8 +36,8 @@
 
 #include <optimizexx/error.h>
 
-#ifndef _ITERATIONSTATE_H_
-#define _ITERATIONSTATE_H_
+#ifndef _OPTIMIZEXX_ITERATIONSTATE_H_
+#define _OPTIMIZEXX_ITERATIONSTATE_H_
  
 namespace optimize
 {

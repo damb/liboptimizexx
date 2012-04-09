@@ -43,8 +43,8 @@
 #include <optimizexx/forwarditerator.h>
 #include <optimizexx/reverseiterator.h>
 
-#ifndef _GRID_H_
-#define _GRID_H_
+#ifndef _OPTIMIZEXX_GRID_H_
+#define _OPTIMIZEXX_GRID_H_
 
 namespace optimize
 {
@@ -293,6 +293,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF grid.h  ----- */

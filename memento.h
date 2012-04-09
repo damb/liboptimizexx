@@ -37,8 +37,8 @@
 #include <deque>
 #include <optimizexx/iterationstate.h>
 
-#ifndef _MEMENTO_H_
-#define _MEMENTO_H_
+#ifndef _OPTIMIZEXX_MEMENTO_H_
+#define _OPTIMIZEXX_MEMENTO_H_
 
 namespace optimize
 {
@@ -210,7 +210,6 @@ namespace optimize
 
 } // namespace optimize
  
-
-#endif
+#endif // include guard
 
 /* ----- END OF memento.h  ----- */

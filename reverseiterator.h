@@ -36,8 +36,8 @@
  
 #include <optimizexx/iterator.h>
 
-#ifndef _REVERSEITERATOR_H_
-#define _REVERSEITERATOR_H_
+#ifndef _OPTIMIZEXX_REVERSEITERATOR_H_
+#define _OPTIMIZEXX_REVERSEITERATOR_H_
 
 namespace optimize
 {

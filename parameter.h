@@ -41,8 +41,8 @@
 #include <cmath>
 #include <optimizexx/error.h>
 
-#ifndef _PARAMETER_H_
-#define _PARAMETER_H_
+#ifndef _OPTIMIZEXX_PARAMETER_H_
+#define _OPTIMIZEXX_PARAMETER_H_
 
 namespace optimize
 {
@@ -279,6 +279,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF parameter.h  ----- */

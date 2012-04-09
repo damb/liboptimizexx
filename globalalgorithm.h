@@ -40,8 +40,8 @@
 #include <optimizexx/parameter.h>
 #include <optimizexx/application.h>
  
-#ifndef _GLOBALALGORITHM_H_
-#define _GLOBALALGORITHM_H_
+#ifndef _OPTIMIZEXX_GLOBALALGORITHM_H_
+#define _OPTIMIZEXX_GLOBALALGORITHM_H_
 
 namespace optimize
 {
@@ -169,6 +169,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF globalalgorithm.h  ----- */

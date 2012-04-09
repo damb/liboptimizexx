@@ -37,8 +37,8 @@
 #include <optimizexx/memento.h>
 #include <optimizexx/error.h>
  
-#ifndef _ITERATOR_H_
-#define _ITERATOR_H_
+#ifndef _OPTIMIZEXX_ITERATOR_H_
+#define _OPTIMIZEXX_ITERATOR_H_
 
 namespace optimize
 {
@@ -309,6 +309,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF iterator.h  ----- */

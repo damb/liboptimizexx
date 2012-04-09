@@ -44,8 +44,8 @@
 #include <optimizexx/node.h>
 #include <optimizexx/error.h>
  
-#ifndef _STANDARDBUILDER_H_
-#define _STANDARDBUILDER_H_
+#ifndef _OPTIMIZEXX_STANDARDBUILDER_H_
+#define _OPTIMIZEXX_STANDARDBUILDER_H_
 
 namespace optimize
 {
@@ -229,6 +229,6 @@ namespace optimize
 
 } // namespace optimize
 
-#endif
+#endif // include guard
 
 /* ----- END OF standardbuilder.h  ----- */
