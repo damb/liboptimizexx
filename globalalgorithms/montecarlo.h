@@ -48,8 +48,8 @@
 #include <optimizexx/error.h>
 #include <optimizexx/iterator.h>
  
-#ifndef _MONTECARLO_H_
-#define _MONTECARLO_H_
+#ifndef _OPTIMIZEXX_MONTECARLO_H_
+#define _OPTIMIZEXX_MONTECARLO_H_
 
 namespace optimize
 {

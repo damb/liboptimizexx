@@ -33,7 +33,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 13/03/2012  V0.1  Daniel Armbruster
+ * 13/03/2012  V0.1   Daniel Armbruster
+ * 09/04/2012  V0.2   Both multithreading and single threading test.
  * 
  * ============================================================================
  */
@@ -97,7 +98,7 @@ int main()
   opt::ParameterSpaceBuilder<TcoordType, TresultType>* builder =
     new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>;
 
-  // create gridsearch algorithm
+  // create gridsearch algorithm (multiple threads)
   opt::GridSearch<TcoordType, TresultType>* gridsearch = 
     new opt::GridSearch<TcoordType, TresultType>(builder, params);
 
@@ -105,12 +106,41 @@ int main()
 
   // create application
   Sum app;
+
+  std::cout << "-----------------------\n"
+    << "Multiple threads in use\n"
+    << "-----------------------" << std::endl;
+
   gridsearch->execute(app);
 
   // print results using a node iterator
   opt::CompositeIterator<TcoordType, TresultType>* it = 
     gridsearch->getParameterSpace().createIterator(opt::NodeIter);
 
+  for (it->first(); !it->isDone(); it->next())
+  {
+    std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+    for (std::vector<TcoordType>::const_iterator cit(c.begin());
+        cit != c.end(); ++cit)
+    {
+      std::cout << *cit << " ";
+    }
+    std::cout << it->currentItem()->getResultData() << std::endl;
+  }
+
+  delete gridsearch;
+  
+  // single threading test
+  gridsearch = new opt::GridSearch<TcoordType, TresultType>(
+      builder, params, false);
+
+  gridsearch->constructParameterSpace();
+
+  std::cout << "--------------------\n"
+    << "Single thread in use\n"
+    << "--------------------" << std::endl;
+
+  gridsearch->execute(app);
   for (it->first(); !it->isDone(); it->next())
   {
     std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();

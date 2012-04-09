@@ -75,8 +75,9 @@ namespace optimize
        * \param parameterspacebuilder Pointer to a builder of a parameter space.
        * Default is a StandardParameterSpaceBuilder.
        */
-      GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder) :
-          Tbase(0, builder)
+      GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder,
+          bool use_multithreading=true) :
+          Tbase(0, builder),  MmultiThreading(use_multithreading)
       { }
       /*!
        * constructor
@@ -86,8 +87,9 @@ namespace optimize
        * \param parameters STL vector of pointers to parameters.
        */
       GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder, 
-          std::vector<Parameter<Ctype> const*> const parameters) : 
-          Tbase(0, builder, parameters)
+          std::vector<Parameter<Ctype> const*> const parameters,
+          bool use_multithreading=true) : 
+          Tbase(0, builder, parameters), MmultiThreading(use_multithreading)
       { }
       /*!
        * Construct a parameter space. Before constructing a parameter space for
@@ -104,6 +106,10 @@ namespace optimize
        * parameter space \sa ParameterSpace
        */
       virtual void execute(ParameterSpaceVisitor<Ctype, CresultData>& v);
+
+    private:
+      //! status variable if algorithm uses multiple threads
+      bool MmultiThreading;
 
   }; // class template GridSearch
 
@@ -125,27 +131,39 @@ namespace optimize
   {
     OPTIMIZE_assert(Tbase::MparameterSpace != 0, "Missing parameter space.");
 
-    size_t num_tasks = 0;
-
-    // create thread pool for parallel computation
-    typename thread::ThreadPool<Ctype, CresultData>* pool =
-      new typename thread::ThreadPool<Ctype, CresultData>(v);
-    pool->initialize();
-
     CompositeIterator<Ctype, CresultData>* iter = 
       Tbase::MparameterSpace->createIterator(NodeIter);
-    //! add tasks (node pointers) to pool task queue
-    for (iter->first(); !iter->isDone(); iter->next())
+
+    if (MmultiThreading)
     {
-      pool->addTask(iter->currentItem());
-      ++num_tasks;
+      size_t num_tasks = 0;
+
+      // create thread pool for parallel computation
+      typename thread::ThreadPool<Ctype, CresultData>* pool =
+        new typename thread::ThreadPool<Ctype, CresultData>(v);
+      pool->initialize();
+
+      // add tasks (node pointers) to pool task queue
+      for (iter->first(); !iter->isDone(); iter->next())
+      {
+        pool->addTask(iter->currentItem());
+        ++num_tasks;
+      }
+
+      // wait until all threads finished
+      while(num_tasks != pool->getCompletedTasksCount()) { }
+
+      delete pool;
+    } else
+    // simple single threading execution
+    {
+      for (iter->first(); !iter->isDone(); iter->next())
+      {
+        iter->currentItem()->accept(v);
+      }
     }
 
-    // wait until all threads finished
-    while(num_tasks != pool->getCompletedTasksCount()) { }
-
-    delete pool;
-  }
+  } // function GridSearch<Ctype, CresultData>::execute
 
   /* ----------------------------------------------------------------------- */
 
