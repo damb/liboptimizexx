@@ -91,9 +91,10 @@ namespace optimize
         //! query function for the next task in the task queue
         Ctask& waitAndPopTask();
         /*!
-         * query function for the next task in the task queue
+         * query function for the next task in the task queue\n
          * In contrast to optimize::thread::Fifo::waitAndPopTask this function
-         * does not stop the thread trying to pop a task.
+         * does not keep the the thread waiting until the task queue does
+         * contain a task to pop.
          *
          * \param reference to the task which is set if pop had been successful
          * \return if pop was successful
