@@ -117,7 +117,13 @@ namespace optimize
           std::vector<Parameter<Ctype> const*> parameters) :
           MparameterSpace(parameterspace), MparameterSpaceBuilder(builder),
           Mparameters(parameters) 
-      { }
+      { 
+        for (typename std::vector<Parameter<Ctype> const*>::const_iterator cit(
+            Mparameters.begin()); cit != Mparameters.end(); ++cit)
+        {
+          OPTIMIZE_assert((*cit)->isValid(), "Invalid parameter.");
+        }
+      }
 
     protected:
       //! Pointer to the parameter space
