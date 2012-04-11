@@ -162,6 +162,7 @@ namespace optimize
         iter->currentItem()->accept(v);
       }
     }
+    delete iter;
 
   } // function GridSearch<Ctype, CresultData>::execute
 
