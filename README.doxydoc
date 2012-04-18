@@ -52,12 +52,22 @@ from the global algorithm. It is described with a grid consisting of both
 subgrids and nodes of which the latter are able to store any result data
 type.\n
 
-Additionally the library comes along with an iterators to iterate over the
-entire parameter space. Up to now iterating both \a post-ordered and \a
-pre-ordered is provided. Besides a usual optimize::Iterator to iterate over all
-grid components of type optimize::GridComponent a parameter space contains, it's
-also possible to iterate only either over components of type optimize::Node or
-of type optimize::Grid.\n
+Additionally the library comes along with an iterator to iterate over the
+entire parameter space. Depending on the iterator strategy the iterator is
+configured with the behaviour of the iterator will change. Up to now both
+forward and reverse iterator strategies are provided which both support
+iterating \a post-ordered and \a pre-ordered. Besides the usual strategy to
+iterate over all grid components of type optimize::GridComponent there are
+additionally iterator strategies which only iterate over either optimze::Grid
+or optimize::Node grid components. Notice that for the implementation of
+optimize::Iterator the <em>Strategy design pattern</em> is in use (GoF p.315).
+Strategies are created by the factory class
+optimize::iterator::IteratorStrategyFactory (<em>Factory method design
+pattern</em> GoF p.107). The main advantages of this approach are on one hand
+decoupling the iterator module from the parameter space representation and on
+the other hand the fact that only a concrete iterator instance of class
+optimize::Iterator is in use which hides completely the functionalisms of
+iterating over an parameter space.\n
 
 Because the library was built using extensively design patterns it should be
 extensible easily in a modular way. The parameter space is set up making use of
@@ -65,16 +75,13 @@ the <em>Composite design pattern</em> (GoF p.163) while it will be created using
 an instance of a concrete builder class (GoF p.97) like i.e.
 optimize::StandardParameterSpaceBuilder (Up to now no further concrete builders
 are provided).\n
-Iterating over a parameter space is implemented using both the <em>Iterator design
+Iterator strategies were implemented using both the <em>Iterator design
 pattern</em> (GoF p.257) including the <em>Memento design pattern</em> (GoF
 p.283), of which the latter completely is hidden from the user and just is
 necessary to save the iteration states of an iterator. liboptimizexx iterators
-are implemented as <em>external polymorphic iterators</em>. Because
-optimize::Grid::createIterator returns a newly allocated iterator object the
-user is responsible for deleting it afterwards. To make life easier \a
-liboptimizexx comes along with the \a proxy class template optimize::IteratorPtr
-which takes care of cleaning up the iterator object when it goes out of
-scope.\n
+are implemented as <em>external polymorphic iterators</em>, though the
+polymorphism only refers to the implementation of the iterator strategies as
+already mentioned above.\n
 To split on one hand the application and on the other hand the environment a
 parameter space provides every application must be implemented by inheritance of
 the class optimize::ParameterSpaceVisitor which means that each global algorithm
@@ -120,10 +127,11 @@ probability distribution. liboptimizexx comes along with the following
 probability distributions (if compiled with \a C++11 support) which can be
 selected passing the corresponding enumeration type optimize::Edistribution to
 the constructor. Notice, that default is optimize::Normal which refers to the
-Normal or Gaussian distribution. If \a C++11 support is not enabled the \c
-rand() function of \c cstdlib.h will be used.\n
+Normal or Gaussian distribution. 
 After the calculation the results might be fetched using a
-optimize::NodeIterator.
+optimize::iterator::ForwardNodeIterator.
+
+\todo Not tested yet. Implementation up to now throws Segmentation fault.
 
 */
 
@@ -222,24 +230,25 @@ gridsearch->execute(app);
 \endcode
 
 Afterwards the results can be collected from the parameter space using a
-optimize::NodeIterator. Here the results only were printed to \c stdout.
+optimize::iterator::ForwardNodeIterator iterator strategy. Here the results
+only were printed to \c stdout.
 
 \code
-// print results using a node iterator
-opt::CompositeIterator<TcoordType, TresultType>* it = 
-  gridsearch->getParameterSpace().createIterator(opt::NodeIter);
+// print results using a forward node iterator
+opt::Iterator<TcoordType, TresultType> it = 
+  gridsearch->getParameterSpace().createIterator(opt::ForwardNodeIter);
 
-for (it->first(); !it->isDone(); it->next())
+for (it.first(); !it.isDone(); ++it)
 {
   // print node coordinates
-  std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+  std::vector<TcoordType> const& c = (*it)->getCoordinates();
   for (std::vector<TcoordType>::const_iterator cit(c.begin());
       cit != c.end(); ++cit)
   {
     std::cout << *cit << " ";
   }
   // print result data
-  std::cout << it->currentItem()->getResultData() << std::endl;
+  std::cout << (*it)->getResultData() << std::endl;
 }
 \endcode
 

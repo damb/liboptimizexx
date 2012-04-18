@@ -105,24 +105,23 @@ int main()
   montecarlo->execute(app);
 
   // print results using a node iterator
-  opt::CompositeIterator<TcoordType, TresultType>* it = 
-    montecarlo->getParameterSpace().createIterator(opt::NodeIter);
+  opt::Iterator<TcoordType, TresultType> it(
+      montecarlo->getParameterSpace().createIterator(opt::ForwardNodeIter));
 
-  for (it->first(); !it->isDone(); it->next())
+  for (it.first(); !it.isDone(); ++it)
   {
-    std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
-    if (it->currentItem()->isComputed())
+    std::vector<TcoordType> const& c = (*it)->getCoordinates();
+    if ((*it)->isComputed())
     {
       for (std::vector<TcoordType>::const_iterator cit(c.begin());
           cit != c.end(); ++cit)
       {
         std::cout << *cit << " ";
       }
-      std::cout << it->currentItem()->getResultData() << std::endl;
+      std::cout << (*it)->getResultData() << std::endl;
     }
   }
 
-  delete it;
   delete builder;
   delete montecarlo;
   delete param1;

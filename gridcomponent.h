@@ -38,9 +38,11 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <memory>
 #include <optimizexx/application.h>
 #include <optimizexx/parameter.h>
 #include <optimizexx/iterator.h>
+#include <optimizexx/iterator/iteratorstrategyfactory.h>
 #include <optimizexx/error.h>
  
 #ifndef _GRIDCOMPONENT_H_
@@ -48,17 +50,6 @@
 
 namespace optimize
 {
-  #ifdef __GXX_EXPERIMENTAL_CXX0X__
-  // using template aliases
-  // see: http://www2.research.att.com/~bs/C++0xFAQ.html#template-alias
-  template <typename CresultData>
-  using TdParameterSpace = GridComponent<double, CresultData>;
-  template <typename CresultData>
-  using TfParameterSpace = GridComponent<float, CresultData>;
-  template <typename CresultData>
-  using TfParameterSpace = GridComponent<int, CresultData>;
-  #endif
-
   /* ======================================================================= */
   //! \defgroup group_grid grid modul
   /*! 
@@ -85,9 +76,17 @@ namespace optimize
       //! Usual iterator for the children of a composite.
       typedef typename std::list<GridComponent<Ctype, CresultData>*>::iterator
         Titer;
+      //! Constant iterator for the children of a composite.
+      typedef typename
+        std::list<GridComponent<Ctype, CresultData>*>::const_iterator
+        Tconst_iter;
       //! Reverse iterator for children of a composite.
       typedef typename std::list<
         GridComponent<Ctype, CresultData>*>::reverse_iterator Treverse_iter;
+      //! Constant reverse iterator for children of a composite.
+      typedef typename std::list<
+        GridComponent<Ctype, CresultData>*>::const_reverse_iterator
+        Tconst_reverse_iter;
 
     public:
       //! destructor
@@ -112,8 +111,8 @@ namespace optimize
        * \param type Iteration type.
        * \return The corresponding composite iterator (product).
        */
-      virtual CompositeIterator<Ctype, CresultData>* createIterator(
-          EiteratorId id, EiterationType type=PostOrder) const;
+      virtual Iterator<Ctype, CresultData> createIterator(
+          EiteratorType iter_type, EiterationMode iter_mode=PostOrder) const;
       //! Query function for the component type of the grid component.
       /*!
        *  Accutally only necessary for the implementation of the composite
@@ -225,12 +224,14 @@ namespace optimize
 
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
-  CompositeIterator<Ctype, CresultData>* 
-  GridComponent<Ctype,CresultData>::createIterator(EiteratorId id,
-      EiterationType type) const
+  Iterator<Ctype, CresultData> 
+  GridComponent<Ctype,CresultData>::createIterator(EiteratorType iter_type,
+      EiterationMode iter_mode) const
   {
-    return new NullIterator<Ctype,CresultData>(
-        const_cast<GridComponent<Ctype, CresultData>* >(this));
+    iterator::IteratorStrategyFactory<Ctype, CresultData> factory;
+    return Iterator<Ctype, CresultData>(std::move(
+          factory.makeIteratorStrategy(NullIter, iter_mode, 
+          const_cast<GridComponent<Ctype, CresultData>*>(this))));
   }
 
 } // namespace optimize

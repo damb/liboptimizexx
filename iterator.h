@@ -1,13 +1,13 @@
 /*! \file iterator.h
- * \brief Declarations of various parameter space iterators.
+ * \brief Declare an iterator class template
  * 
  * ----------------------------------------------------------------------------
  * 
  * $Id$
  * \author Daniel Armbruster
- * \date 20/02/2012
+ * \date 12/04/2012
  * 
- * Purpose: Declarations of various parameter space iterators. 
+ * Purpose: Declare an iterator class template.
  *
  * ----
  * This file is part of liboptimizexx.
@@ -29,281 +29,226 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 20/02/2012  V0.1  Daniel Armbruster
+ * 12/04/2012  V0.1  Daniel Armbruster
  * 
  * ============================================================================
  */
-
-#include <optimizexx/memento.h>
-#include <optimizexx/error.h>
  
+#include <memory>
+#include <optimizexx/iterator/compositeiterator.h>
+
 #ifndef _OPTIMIZEXX_ITERATOR_H_
 #define _OPTIMIZEXX_ITERATOR_H_
 
 namespace optimize
 {
-  // forward declarations
+
+  // forward declaration
   template <typename Ctype, typename CresultData> class GridComponent;
-  template <typename Ctype, typename CresultData> class CompositeIterator;
-  
-  //! \defgroup group_iterator parameter space iterator
+  template <typename Ctype, typename CresultData> class Iterator;
+
+  /* ======================================================================= */
+  //! \defgroup group_iterator Parameter Space iterator module
   /*!
-   * Iterator Ids for parameterized factory method (GoF p.111). 
-   *
-   * \sa GridComponent<Ctype, CresultData>::createIterator
-   * \sa Grid<Ctype, CresultData>::createIterator
+   * Iterator types for parameterized factory method (GoF p.111). 
    *
    * \ingroup group_iterator
    */
-  enum EiteratorId
+  enum EiteratorType
   {
-    Iter,         //!< usual iterator
-    GridIter,     //!< only grid iterator
-    NodeIter,     //!< only node iterator
-    RevIter,      //!< reverse iterator
-    RevGridIter,  //!< only grid reverse iterator
-    RevNodeIter,  //!< only node reverse iterator
-    NullIter      //!< degenerated iterator
-  }; // enum EiteratorId
+    ForwardIter,          //!< usual iterator
+    ForwardGridIter,      //!< only grid iterator
+    ForwardNodeIter,      //!< only node iterator
+    ReverseIter,          //!< reverse iterator
+    ReverseGridIter,      //!< only grid reverse iterator
+    ReverseNodeIter,      //!< only node reverse iterator
+    NullIter              //!< degenerated iterator
+  }; // enum EiteratorType
 
-  //! Type of iteration.
-  enum EiterationType
+  /*!
+   * Mode of iteration.
+   *
+   * \ingroup group_iterator
+   */
+  enum EiterationMode
   {
     PreOrder, //!< Pre-oder iteration
     PostOrder //!< Post-order iteration
-  }; // enum EiterationType
+  }; // enum EiterationMode
 
   /* ======================================================================= */
   /*!
-   * Advances the iterator \a iter by \a n elements.
+   * Advances the iterator \c iter by \c n elements.
    *
    * \todo Not tested yet.
    *
    * \param iter Iterator to be advanced.
    * \param n Number of elements to be advanced. If n is equal to or greater
-   * than the number of children in the parameter space grid than \a iter will
+   * than the number of children in the parameter space grid than \c iter will
    * point to the last element.
+   *
+   * \ingroup group_iterator
    */
-  template <typename CcompositeIterator>
-  void advance(CcompositeIterator& iter, unsigned int n)
+  template <typename Citerator>
+  void advance(Citerator& iter, size_t n)
   {
-    while (n > 0 && ! iter.isDone())
+    while (! iter.isDone() && n > 0)
     {
-      iter.next();
       --n;
+      iter.next();
     }
-  }
+  } // function template advance
 
   /* ----------------------------------------------------------------------- */
   /*!
-   * Calculates the number of elements between \a iter_first and \a iter_last.
-   *
-   * \todo Not tested yet.
+   * Calculates the number of elements between \c iter_first and \c iter_last.
    *
    * \param iter_first Iterator pointing to the initial element.
    * \param iter_last Iterator pointing to the final element. This must be
-   * reachable from \a iter_first.
+   * reachable from \c iter_first.
+   *
+   * \note In contrast to the STL distance function the function uses
+   * repeatedly the \c next() function of the composite iterator.
+   *
+   * \return number of elements between \c iter_first and \c iter_last
+   *
+   * \ingroup group_iterator
    *
    * \note Have a look at http://drdobbs.com/184401406 to improve
    * implementation.
    */
-  template <typename CcompositeIterator>
-  unsigned int distance(CcompositeIterator& iter_first,
-      CcompositeIterator& iter_last)
+  template <typename Citer_first, typename Citer_last>
+  size_t distance(Citer_first const& iter_first, Citer_last const& iter_last)
   {
-    CcompositeIterator& iter(iter_first);
+    Citer_first iter(iter_first);
 
-    unsigned int retval = 0;
-    while (iter != iter_last && ! iter.isDone())
+    size_t retval = 0;
+    std::cout << iter.isDone() << std::endl;
+    std::cout << iter_last.isDone() << std::endl;
+    std::cout << *iter << std::endl;
+    while (! iter.isDone() && iter != iter_last)
     {
       ++retval;
       iter.next(); 
     }
-
     if (iter != iter_last)
     {
-      retval = 0;
       iter.first(); 
-      while (iter != iter_last)
-      {
-        ++retval;
-        iter.next(); 
-      }
+      while (iter != iter_last) { ++retval; iter.next(); }
     }
     return retval;
-  }
+  } // function distance
 
   /* ======================================================================= */
   /*!
-   * Proxy for a composite iterator to make sure iterators get deleted.
-   * Implementation of suggestion in GoF p.266.
+   * \brief Parameter space iterator.
    *
-   * Can be treated just like a pointer to an iterator.
+   * Notice, that here the Strategy design pattern is in use (GoF p.315). The
+   * main advantage of using this approach is encapsulating an iterator strategy
+   * so that clients using a parameter space iterator are able to avoid iterator
+   * pointers actually. This class corresponds to the \a Context class of the
+   * Strategy design pattern in GoF.
    *
-   * \todo Not tested yet.
-   */
-  template <typename Ctype, typename CresultData>
-  class IteratorPtr
-  {
-    public:
-      //! constructor
-      IteratorPtr(CompositeIterator<Ctype, CresultData>* i) : Miterator(i) { }
-      //! destructor
-      ~IteratorPtr() { delete Miterator; }
-      CompositeIterator<Ctype, CresultData>* operator->() { return Miterator; }
-      CompositeIterator<Ctype, CresultData>& operator*() { return *Miterator; }
-
-    private:
-      //! composite iterator to handle  
-      CompositeIterator<Ctype, CresultData>* Miterator;
-
-    private:
-        //! disallow copy to avoid multiple deletions
-        IteratorPtr(IteratorPtr<Ctype, CresultData> const&);
-        //! disallow assignment to avoid multiple deletions
-        IteratorPtr& operator=(IteratorPtr<Ctype, CresultData> const&);
-
-  }; // class IteratorPtr
-
-  /* ======================================================================= */
-  /*!
-   * Abstract base class template for parameter space iterators.
-   * Note that here the iterator design pattern is in use (GoF p.257).
-   * Iterators are created using the Grid::createIterator factory method
-   * (GoF p.107). To traverse the recursivly aggregated parameter space the
-   * iterators (concrete originators) are able to save their internal iteration
-   * states making use of the memento design pattern (GoF p.283).\n
-   *
-   * IMPORTANT NOTE: Usually the memento's caretaker is different from the
-   * memento's originater, but in my case the iterator both is caretaker and
-   * originator. This problem could be solved using the IteratorPtr approach
-   * (GoF p.266).\n
-   *
-   * Note that the functionalism of how the post-/pre-order iteration is
-   * delegated to the iterator mementos.
+   * \todo How to avoid the fact that the 
    *
    * \ingroup group_iterator
    */
   template <typename Ctype, typename CresultData>
-  class CompositeIterator
+  class Iterator
   {
     public:
       typedef GridComponent<Ctype, CresultData>* Tcomp_ptr;
-
-    public:
-      virtual void first() { OPTIMIZE_illegal; }
-      virtual void last() { OPTIMIZE_illegal; }
-      //! iterate to the next item in the container
-      virtual void next()  { OPTIMIZE_illegal; }
-      //! query function if the iteration has finished
-      virtual bool isDone() const = 0;
-      /*!
-       * Note that here returning a pointer is necessary because otherwise there
-       * couldn't be made any use of the polymorphic functionalism the parameter
-       * space composite is providing.\n
-       *
-       * IMPORTANT NOTE: For simpler syntax provide the same function returning
-       * a reference or even better overload the corresponding operators.
-       *
-       * \return a pointer to the current grid component
-       */
-      virtual Tcomp_ptr currentItem() const = 0;
-      //! destructor
-      virtual ~CompositeIterator() { }
-      //! pre-increment operator
-      virtual CompositeIterator<Ctype, CresultData>& operator++() 
-      { 
-        OPTIMIZE_illegal;
-      }
-      //! equal to operator
-      virtual bool operator==(
-          CompositeIterator<Ctype, CresultData> const& rhs) 
-      {
-        OPTIMIZE_illegal;
-      }
-      //! unequal to operator
-      virtual bool operator!=(
-          CompositeIterator<Ctype, CresultData> const& rhs) 
-      {
-        OPTIMIZE_illegal;
-      }
-      //! dereference operator
-      virtual GridComponent<Ctype, CresultData>* operator*()
-      {
-        OPTIMIZE_illegal;
-      }
-
-    protected:
-      /*!
-       * Parameterized factory method to create the correct iteration memento.
-       * Factory method design pattern in use (GoF p.107).
-       */
-      IteratorMemento<Ctype, CresultData>* setIterationType(
-          EiterationType type);
-
-  }; // class template CompositeIterator
-
-  /* ======================================================================= */
-  /*!
-   * Degenerated iterator with the property that NullIterator::isDone always
-   * returns true. The advantage of this approach is that boundary conditions
-   * are much easier to handle. See also GoF p.262.
-   *
-   * \ingroup group_iterator
-   */
-  template <typename Ctype, typename CresultData>
-  class NullIterator : public CompositeIterator<Ctype, CresultData>
-  {
-    public:
-      typedef typename CompositeIterator<Ctype, CresultData>::Tcomp_ptr
-        Tcomp_ptr;
+      typedef typename std::unique_ptr<
+          iterator::CompositeIterator<Ctype, CresultData>> Tstrategy;
 
     public:
       //! constructor
-      NullIterator(Tcomp_ptr root) : Mcomp_ptr(root) { }
-      /*!
-       * Because NullIterator is a degenerated iterator always will return
-       * true.
-       *
-       * \return true
-       */
-      virtual bool isDone() const { return true; }
-      /*!
-       * Always will return the component which is the NullIterator's
-       * originator.
-       * 
-       * \return The NullIterator's originator.
-       */
-      virtual Tcomp_ptr currentItem() const {  return Mcomp_ptr; }
+      Iterator(Tstrategy iter_strategy) : Miter(std::move(iter_strategy))
+      { }
+      //! copy constructor
+      Iterator(Iterator<Ctype, CresultData> const& rhs);
+      //! assignment operator
+      Iterator<Ctype, CresultData>& operator=(
+          Iterator<Ctype, CresultData> const& rhs);
+      //! set iterator to first element (depending on strategy)
+      void first() { Miter->first(); }
+      //! set iterator to last element
+      void back() { Miter->back(); }
+      //! query function if iterator has reached last element
+      bool isDone() const { return Miter->isDone(); }
+      //! iterate to next element
+      void next() { Miter->next(); }
+      //! query function for current item iterator is pointing to
+      Tcomp_ptr currentItem() { return Miter->currentItem(); }
+      //! pre-increment operator
+      Iterator<Ctype, CresultData>& operator++();
+      //! post-increment operator
+      Iterator<Ctype, CresultData> operator++(int);
+      //! equal to operator
+      bool operator==(Iterator<Ctype, CresultData> const& rhs) const;
+      //! unequal to operator
+      bool operator!=(Iterator<Ctype, CresultData> const& rhs) const;
+      //! dereference operator
+      Tcomp_ptr operator*() { return Miter->currentItem(); }
 
     private:
-      Tcomp_ptr Mcomp_ptr;
+      //! pointer to a concrete iterator strategy
+      typename std::unique_ptr<iterator::CompositeIterator<Ctype, CresultData>>
+        Miter;
 
-  }; // class template NullIterator
+  }; // class template Iterator
 
   /* ======================================================================= */
-  // function definitions of class CompositeIterator
+  template <typename Ctype, typename CresultData>
+  Iterator<Ctype, CresultData>::Iterator(
+      Iterator<Ctype, CresultData> const& rhs)
+  {
+    this->Miter = rhs.Miter->clone();
+  } // copy constructor
+
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
-  IteratorMemento <Ctype, CresultData>*
-  CompositeIterator<Ctype, CresultData>::setIterationType(
-      EiterationType type)
+  Iterator<Ctype, CresultData>& Iterator<Ctype, CresultData>::operator=(
+      Iterator<Ctype, CresultData> const& rhs)
   {
-    IteratorMemento<Ctype, CresultData>* iter_memento = 0;
-    //! up to now only post-ordered iteration is implemented.
-    if (PostOrder == type) 
-    { 
-      iter_memento = new PostIterationMemento<Ctype, CresultData>;
-    } else
-    if (PreOrder == type) 
-    { 
-      iter_memento = new PreIterationMemento<Ctype, CresultData>;
+    if (this != &rhs)
+    {
+      this->Miter = rhs.Miter->clone();
     }
-    else { OPTIMIZE_abort("Illegal iteration type."); }
+    return *this;
+  } // function Iterator<Ctype, CresultData>::operator=
 
-    return iter_memento;
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  Iterator<Ctype, CresultData>& Iterator<Ctype, CresultData>::operator++()
+  { 
+    Miter->next(); return *this; 
+  }
 
-  } // function CompositeIterator<Ctype, CresultData>::setIterationType
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  Iterator<Ctype, CresultData> Iterator<Ctype, CresultData>::operator++(int)
+  {
+    Iterator<Ctype, CresultData> tmp(*this);
+    operator++();
+    return tmp;
+  }
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  bool Iterator<Ctype, CresultData>::operator==(
+      Iterator<Ctype, CresultData> const& rhs) const
+  {
+    return Miter->currentItem() == rhs.Miter->currentItem();
+  }
+
+  /* ----------------------------------------------------------------------- */
+  template <typename Ctype, typename CresultData>
+  bool Iterator<Ctype, CresultData>::operator!=(
+      Iterator<Ctype, CresultData> const& rhs) const
+  {
+    return !(*this == rhs);
+  }
 
   /* ----------------------------------------------------------------------- */
 

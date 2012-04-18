@@ -114,18 +114,18 @@ int main()
   gridsearch->execute(app);
 
   // print results using a node iterator
-  opt::CompositeIterator<TcoordType, TresultType>* it = 
-    gridsearch->getParameterSpace().createIterator(opt::NodeIter);
+  opt::Iterator<TcoordType, TresultType> it(
+      gridsearch->getParameterSpace().createIterator(opt::ForwardNodeIter));
 
-  for (it->first(); !it->isDone(); it->next())
+  for (it.first(); !it.isDone(); ++it)
   {
-    std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+    std::vector<TcoordType> const& c = (*it)->getCoordinates();
     for (std::vector<TcoordType>::const_iterator cit(c.begin());
         cit != c.end(); ++cit)
     {
       std::cout << *cit << " ";
     }
-    std::cout << it->currentItem()->getResultData() << std::endl;
+    std::cout << (*it)->getResultData() << std::endl;
   }
 
   delete gridsearch;
@@ -141,18 +141,17 @@ int main()
     << "--------------------" << std::endl;
 
   gridsearch->execute(app);
-  for (it->first(); !it->isDone(); it->next())
+  for (it.first(); !it.isDone(); ++it)
   {
-    std::vector<TcoordType> const& c = it->currentItem()->getCoordinates();
+    std::vector<TcoordType> const& c = (*it)->getCoordinates();
     for (std::vector<TcoordType>::const_iterator cit(c.begin());
         cit != c.end(); ++cit)
     {
       std::cout << *cit << " ";
     }
-    std::cout << it->currentItem()->getResultData() << std::endl;
+    std::cout << (*it)->getResultData() << std::endl;
   }
 
-  delete it;
   delete builder;
   delete gridsearch;
   delete param1;

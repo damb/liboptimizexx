@@ -41,10 +41,10 @@ clean:
 # ----------------------------------------------------------------------------
 
 $(addsuffix .o,$(STANDARDTEST)): %.o: %.cc
-	@$(CXX) -c -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(FLAGS)
+	$(CXX) -c -o $@ $< -std=c++0x $(CXXFLAGS) $(CPPFLAGS) $(FLAGS)
 
 $(STANDARDTEST): %: %.o 	
-	@echo -e "\n[ Compiling test program: $@ ]\n"	
-	@$(CXX) -o $@ $< $(LDFLAGS) -loptimizexx -lboost_thread
+	echo -e "\n[ Compiling test program: $@ ]\n"	
+	$(CXX) -o $@ $< $(LDFLAGS) -std=c++0x -loptimizexx -lboost_thread
 
 # ----- END OF Makefile -----

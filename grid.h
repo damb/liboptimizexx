@@ -39,9 +39,8 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <memory>
 #include <optimizexx/gridcomponent.h>
-#include <optimizexx/forwarditerator.h>
-#include <optimizexx/reverseiterator.h>
 
 #ifndef _OPTIMIZEXX_GRID_H_
 #define _OPTIMIZEXX_GRID_H_
@@ -51,6 +50,8 @@ namespace optimize
 
   // forward declaration
   template <typename Ctype, typename CresultData> class ParameterSpaceVisitor;
+  template <typename Ctype, typename CresultData> class Iterator;
+  template <typename Ctype, typename CresultData> class IteratorStrategyFactory;
 
   /* ======================================================================= */
   /*!
@@ -104,8 +105,8 @@ namespace optimize
        * \param type Iteration type.
        * \return The corresponding composite iterator (product).
        */
-      virtual CompositeIterator<Ctype, CresultData>* createIterator(
-          EiteratorId id, EiterationType type=PostOrder) const;
+      virtual Iterator<Ctype, CresultData> createIterator(
+          EiteratorType iter_type, EiterationMode iter_mode=PostOrder) const;
       /*!
        * Add a gridcomponent to the grid composite.
        * 
@@ -250,42 +251,14 @@ namespace optimize
 
   /* ----------------------------------------------------------------------- */
   template <typename Ctype, typename CresultData>
-  CompositeIterator<Ctype, CresultData>* 
-  Grid<Ctype,CresultData>::createIterator(EiteratorId id,
-      EiterationType type) const
+  Iterator<Ctype, CresultData> Grid<Ctype,CresultData>::createIterator(
+          EiteratorType iter_type, EiterationMode iter_mode) const
   {
-    if (Iter == id) 
-    { 
-      return new ForwardIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } else
-    if (GridIter == id) 
-    { 
-      return new ForwardGridIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } else
-    if (NodeIter == id) 
-    { 
-      return new ForwardNodeIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } else
-    if (RevIter == id) 
-    { 
-      return new ReverseIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } else
-    if (RevGridIter == id) 
-    { 
-      return new ReverseGridIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    } else
-    if (RevNodeIter == id) 
-    { 
-      return new ReverseNodeIterator<Ctype, CresultData>(
-          const_cast<Grid<Ctype, CresultData>*>(this), type); 
-    }
-
-    return GridComponent<Ctype, CresultData>::createIterator(id, type);
+    iterator::IteratorStrategyFactory<Ctype, CresultData> factory;
+    
+    return Iterator<Ctype, CresultData>(std::move(factory.makeIteratorStrategy(
+            iter_type, iter_mode,
+            const_cast<Grid<Ctype, CresultData>*>(this))));
   }
 
   /* ----------------------------------------------------------------------- */

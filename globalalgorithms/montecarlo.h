@@ -29,20 +29,15 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 16/03/2012  V0.1  Daniel Armbruster
+ * 16/03/2012   V0.1    Daniel Armbruster
+ * 18/04/2012   V0.2    Completely use C++0x.
  * 
  * ============================================================================
  */
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-  #include <random>
-  #include <functional>
-#else
-  #include <cstdlib>
-  #include <ctime>
-#endif
-
 #include <iostream>
+#include <random>
+#include <functional>
 #include <optimizexx/globalalgorithm.h>
 #include <optimizexx/parameter.h>
 #include <optimizexx/error.h>
@@ -135,6 +130,10 @@ namespace optimize
        * \param v Reference to a ParameterSpaceVisitor or rather application.
        * For further information on how to implement an application for the
        * parameter space \sa ParameterSpace
+       *
+       * \todo Does not work properly yet. To determine the size of the
+       * parameter space composite I have to implement the
+       * optimize::iterator::ForwardNodeIterator::last function.
        */
       virtual void execute(ParameterSpaceVisitor<Ctype, CresultData>& v);
 
@@ -164,65 +163,58 @@ namespace optimize
   {
     OPTIMIZE_assert(Tbase::MparameterSpace != 0, "Missing parameter space.");
 
-    CompositeIterator<Ctype, CresultData>* iter = 
-      Tbase::MparameterSpace->createIterator(NodeIter);
-    iter->first();
-    CompositeIterator<Ctype, CresultData>* iter_last = 
-      Tbase::MparameterSpace->createIterator(NodeIter);
-    iter_last->last();
-    unsigned int num_elements = distance(
-        *dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter),
-        *dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter_last));
-    delete iter_last;
+    Iterator<Ctype, CresultData> iter(
+        Tbase::MparameterSpace->createIterator(ForwardNodeIter));
+    iter.first();
+    Iterator<Ctype, CresultData> iter_last(
+        Tbase::MparameterSpace->createIterator(ForwardNodeIter));
+    iter_last.back();
+
+    unsigned int num_elements =
+      distance<Iterator<Ctype, CresultData>, Iterator<Ctype, CresultData>>(
+          iter, iter_last);
 
     std::vector<unsigned int> indices((Mpercentage/100.)*num_elements);
+    std::cout << "num_indices: " << indices.size() << std::endl;
 
     // generate vector with random numbers
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     unsigned int mean = num_elements/2;
 
-    std::function<unsigned int ()> generator;
-    std::tr1::mt19937 engine;
+    std::function<double()> generator;
+    std::random_device generate_seed;
+    std::mt19937 engine(generate_seed());
     if (UniformInt == Mdistribution)
     {
-      std::tr1::uniform_int_distribution<unsigned int> ui(0,num_elements);
+      std::uniform_int_distribution<unsigned int> ui(0,num_elements);
       generator = std::bind(ui, engine);
     } else
     if (Poisson == Mdistribution)
     {
-      std::tr1::poisson_distribution<unsigned int> poisson(mean);
+      std::poisson_distribution<unsigned int> poisson(mean);
       generator = std::bind(poisson, engine);
     } else
     if (Exponential == Mdistribution)
     {
-      std::tr1::exponential_distribution<unsigned int> e(1.0/mean);
+      std::exponential_distribution<float> e(1.0/mean);
       generator = std::bind(e, engine);
     } else
     {
-      std::tr1::normal_distribution<unsigned int> nd(1.0/mean);
-      generator = std::bind(ui, engine);
+      std::normal_distribution<float> nd(mean, mean/3.);
+      generator = std::bind(nd, engine);
     }
 
     for (size_t i = 0; i < indices.size(); ++i)
     {
-      indices[i] = generator(); 
+      indices[i] = std::round(generator()); 
+      std::cout << indices[i] << std::endl;
     }
-#else
-    srand(time(0));
-    for (size_t i = 0; i < indices.size(); ++i)
-    {
-      indices[i] = rand()%num_elements; 
-    }
-#endif
     for (std::vector<unsigned int>::const_iterator cit(indices.begin());
         cit != indices.end(); ++cit)
     {
-      iter->first();
-      advance(*dynamic_cast<ForwardNodeIterator<Ctype, CresultData>*>(iter),
-          *cit);
-      iter->currentItem()->accept(v);
+      iter.first();
+      advance<Iterator<Ctype, CresultData>>(iter, *cit);
+      (*iter)->accept(v);
     }
-    delete iter;
   } // function MonteCarlo<Ctype, CresultData>::execute()
 
   /* ----------------------------------------------------------------------- */

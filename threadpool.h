@@ -62,7 +62,7 @@ namespace optimize
    * href="http://www.boost.org/doc/libs/release/libs/thread/">Boost's
    * thread library</a>.
    *
-   * \defgroup group_thread
+   * \defgroup group_thread Thread module
    */
   namespace thread
   {
