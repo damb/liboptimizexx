@@ -130,7 +130,11 @@ namespace optimize
     ReverseIterator<Ctype, CresultData>::ReverseIterator(
         ReverseIterator<Ctype, CresultData> const& rhs) :
       Mcomponent(rhs.Mcomponent), MisDone(rhs.MisDone),
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
       MiterMemento(nullptr)
+#else
+      MiterMemento(0)
+#endif
     {
       // copy of iteration memento is a deep copy
       this->MiterMemento = rhs.MiterMemento->clone();
