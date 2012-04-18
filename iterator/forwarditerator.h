@@ -134,7 +134,7 @@ namespace optimize
     ForwardIterator<Ctype, CresultData>::ForwardIterator(
         ForwardIterator<Ctype, CresultData> const& rhs) :
       Mcomponent(rhs.Mcomponent), MisDone(rhs.MisDone),
-      MiterMemento(0)
+      MiterMemento(nullptr)
     {
       // copy of iteration memento is a deep copy
       this->MiterMemento = rhs.MiterMemento->clone();
