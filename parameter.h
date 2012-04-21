@@ -113,23 +113,16 @@ namespace optimize
       /*!
        * constructor
        *
+       * \param id parameter name
        * \param start start value of parameter
        * \param end end value of parameter
        * \param delta parameter interval
-       * \param id parameter name
        * \param unit physical unit of paramter
        */
       StandardParameter(std::string const id, Ctype start, Ctype end,
           Ctype delta, std::string const unit="") : Tbase(id), Mstart(start),
           Mend(end), Mdelta(delta), Munit(unit)
       { }
-      /*!
-       * constructor
-       *
-       * \param param parameter string
-       * \param sep separator
-       */
-      StandardParameter(std::string const& param, const char sep=' ');
       //! destructor
       virtual ~StandardParameter() { }
       //! query function for start value of parameter
@@ -144,14 +137,6 @@ namespace optimize
       virtual std::string getUnit() const { return Munit; }
       //! check if a parameter is valid
       virtual bool isValid() const;
-
-    private:
-      /*!
-       * read parameter from a parameter string using a sepatator character
-       *
-       * \param sep seperator
-       */
-      void readFromString(std::string const& param, const char sep=' ');
 
     private:
       //! start value
@@ -242,38 +227,6 @@ namespace optimize
 
     return true;
   } // function StandardParameter<Ctype>::isValid
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype>
-  void StandardParameter<Ctype>::readFromString(std::string const& param,
-      const char sep)
-  {
-    std::string str(param); 
-    std::vector<std::string> tokens;
-    while (str.find(sep) != std::string::npos)
-    {
-      tokens.push_back(str.substr(0,str.find(sep)));
-      str = str.substr(str.find(sep));
-    }
-    tokens.push_back(str);
-
-    std::istringstream iss(tokens[0]);
-    iss >> Mstart;
-    iss.str(std::string()); iss.clear();
-    iss.str(tokens[1]);
-    iss >> Mend;
-    iss.str(std::string()); iss.clear();
-    iss.str(tokens[2]);
-    iss >> Mdelta;
-    if (tokens.size() > 3)
-    {
-      Tbase::Mid = tokens[3];
-    }
-    if (tokens.size() > 4)
-    {
-      Munit = tokens[4];
-    }
-  } // function StandardParameter<Ctype>::readFromString
 
   /* ----------------------------------------------------------------------- */
 
