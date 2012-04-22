@@ -96,7 +96,11 @@ namespace optimize
        */
       GridComponent<Ctype, CresultData> const& getParameterSpace() const;
       /*!
-       * query function for the parameter space builder
+       * query function for the parameter space builder\n
+       * This function especially is util for users to add parameters in the
+       * correct order so that actually a concrete instance of
+       * optimize::ParameterSpaceVisitor is able to handle the parameter space
+       * coordinates appropriately.
        *
        * \return Reference to a constant parameter space builder.
        */
