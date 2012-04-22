@@ -46,10 +46,28 @@ Implementation:
   parameters should be refined.
   A workaround could be to provide dimensionless Parameters which are a instance
   of a optimize::Parameter. Think about how to implement this facility
-  convenientl.
+  conveniently.
 
   SOLVED:
   -------
   Intoduced a dimensionless parameter with class DimensionlessParameter so that
   a dimensionless parameter space grid is ready for usage now. Builder design
   pattern in use (GoF p.151).
+
+
+2. Improved parameter and parameter space handling by global algorithms
+  Parameters should be handled by the user itself. It doesn't make sense that
+  the global algorithm is responsible for maintaining parameters. On the other
+  hand there are some consequences if doing so.
+  Pass parameters to constructParameterSpace function as std::unique_ptr or
+  introduce both a addParameter(std::unique_ptr) function and a
+  addSubGrid(std::vector<std::unique_ptr>&) function. After setting up a grid as
+  a 'starting point' the grid shouldn't be changed anymore by the user itself
+  cause now the entire responsability lies in the hands of the global algorithm.
+  So if the parameter space had been constructed changes won't be possible
+  anymore.
+  
+  After the parameter space had been built up by the builder the responsability
+  for maintaining the parameter space will be delegated to the global algorithm
+  by passing a unique_ptr to the latter.
+
