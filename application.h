@@ -110,9 +110,8 @@ namespace optimize
   void GridCoordinateDataVisitor<Ctype,CresultData>::operator()(
       Node<Ctype,CresultData>* node)
   {
-    for (typename std::vector<Ctype>::const_iterator cit(
-          node->getCoordinates().begin()); cit != node->getCoordinates().end();
-          ++cit)
+    for (auto cit = node->getCoordinates().cbegin();
+        cit != node->getCoordinates().cend(); ++cit)
     {
       Mos << *cit << " ";
     }

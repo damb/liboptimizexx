@@ -200,14 +200,6 @@ namespace optimize
   // function implementation of class template StandardParameter
   /* ======================================================================= */
   template <typename Ctype>
-  StandardParameter<Ctype>::StandardParameter(std::string const& param,
-      const char sep) : Tbase(""), Munit("")
-  {
-    readFromString(param, sep);
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype>
   unsigned int StandardParameter<Ctype>::getSamples() const
   {
     return static_cast<unsigned int>(ceil(fabs(Mend - Mstart) / Mdelta)+1);

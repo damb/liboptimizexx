@@ -53,7 +53,8 @@ namespace optimize
   /* ======================================================================= */
   //! \defgroup group_grid grid modul
   /*! 
-   * Abstract base class for a grid component
+   * \brief Abstract base class for a grid component
+   *
    * Note that here the Composite design pattern is in use (GoF p.163)
    * Publicity approach chosen so that this class provides the entire
    * interface.
