@@ -29,7 +29,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 29/02/2012  V0.1  Daniel Armbruster
+ * 29/02/2012   V0.1    Daniel Armbruster
+ * 25/04/2012   V0.2    Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
@@ -37,6 +38,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <memory>
 #include <cstdlib>
 #include <cmath>
 #include <optimizexx/builder.h>
@@ -77,7 +79,11 @@ namespace optimize
 
     public:
       //! constructor
-      StandardParameterSpaceBuilder() : Tbase(0)
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+      StandardParameterSpaceBuilder() : Tbase(nullptr)
+#else
+      StandardParameterSpaceBuilder()
+#endif
       { }
       /*!
        * query function for order of parameters the builder will generate the
@@ -96,7 +102,7 @@ namespace optimize
        * \param parameters Parameters of the parameter space.
        */
       virtual void buildGrid(
-          typename std::vector<Parameter<Ctype> const*> const&
+          typename std::vector<std::shared_ptr<Parameter<Ctype> const>> const&
           parameters);
       //! destructor
       virtual ~StandardParameterSpaceBuilder() { }
@@ -106,7 +112,8 @@ namespace optimize
        * \return The parameter space built by the
        * StandardParameterSpaceBuilder.
        */
-      virtual GridComponent<Ctype, CresultData>* getParameterSpace();
+      virtual typename
+        std::unique_ptr<GridComponent<Ctype, CresultData>> getParameterSpace();
 
   }; // class StandardParameterSpaceBuilder
 
@@ -114,7 +121,7 @@ namespace optimize
   template<typename Ctype, typename CresultData> 
   void StandardParameterSpaceBuilder<Ctype, CresultData>::buildParameterSpace()
   {
-    Tbase::MparameterSpace = new Grid<Ctype, CresultData>; 
+    Tbase::MparameterSpace.reset(new Grid<Ctype, CresultData>); 
   }
 
   /* ----------------------------------------------------------------------- */
@@ -131,15 +138,15 @@ namespace optimize
   /* ----------------------------------------------------------------------- */
   template<typename Ctype, typename CresultData> 
   void StandardParameterSpaceBuilder<Ctype, CresultData>::buildGrid(
-      typename std::vector<Parameter<Ctype> const*> const& parameters)
+      typename std::vector<std::shared_ptr<Parameter<Ctype> const>> const&
+      parameters)
   {
     size_t dimension = parameters.size();      
 
     // coordinate ids of parameter space
     std::vector<std::string> coordIds;
     coordIds.reserve(dimension);
-  for (typename std::vector<Parameter<Ctype> const*>::const_iterator cit(
-          parameters.begin()); cit != parameters.end(); ++cit)
+  for (auto cit(parameters.cbegin()); cit != parameters.cend(); ++cit)
     {
       OPTIMIZE_assert((*cit)->isValid(), "Invalid parameter");
       if (! (*cit)->getId().empty())
@@ -156,8 +163,7 @@ namespace optimize
     typename std::vector<Tcomponent> components;
     components.reserve(dimension);
 
-    for (typename std::vector<Parameter<Ctype> const*>::const_iterator 
-        cit(parameters.begin()); cit != parameters.end(); ++cit)
+    for (auto cit(parameters.cbegin()); cit != parameters.cend(); ++cit)
     {
       // number of samples - round up
       size_t samples = (*cit)->getSamples();
@@ -179,8 +185,7 @@ namespace optimize
 
     // vector of component iterators
     typename std::vector<typename Tcomponent::const_iterator> iterators;
-    for (typename std::vector<Tcomponent>::const_iterator cit(
-        components.begin()); cit != components.end(); ++cit)
+    for (auto cit(components.cbegin()); cit != components.cend(); ++cit)
     {
       typename Tcomponent::const_iterator i(cit->begin());
       iterators.push_back(i);
@@ -192,9 +197,7 @@ namespace optimize
       while (iterators[0] != components[0].end())
       {
         Tcomponent coordinates;
-        for (typename
-            std::vector<typename Tcomponent::const_iterator>::const_iterator
-            cit(iterators.begin()); cit != iterators.end(); ++cit)
+        for (auto cit(iterators.cbegin()); cit != iterators.cend(); ++cit)
         {
           coordinates.push_back(**cit);
         }
@@ -219,10 +222,10 @@ namespace optimize
 
   /* ----------------------------------------------------------------------- */
   template<typename Ctype, typename CresultData> 
-  GridComponent<Ctype,CresultData>* 
+  typename std::unique_ptr<GridComponent<Ctype,CresultData>>
   StandardParameterSpaceBuilder<Ctype, CresultData>::getParameterSpace()
   {
-    return Tbase::MparameterSpace;
+    return std::move(Tbase::MparameterSpace);
   }
 
   /* ----------------------------------------------------------------------- */

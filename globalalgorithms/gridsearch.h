@@ -31,11 +31,13 @@
  * REVISIONS and CHANGES 
  * 24/02/2012  V0.1   Daniel Armbruster
  * 08/04/2012  V0.2   Make use of the threadpool take advantage of concurrency.
+ * 25/04/2012  V0.3   Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
 
 #include <vector>
+#include <memory>
 #include <optimizexx/globalalgorithm.h>
 #include <optimizexx/parameter.h>
 #include <optimizexx/threadpool.h>
@@ -78,9 +80,14 @@ namespace optimize
        * \param num_threads Number of threads the algorithm uses for parallel
        * computation
        */
-      GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder,
+      GridSearch(
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
           size_t num_threads=0) :
-          Tbase(0, builder), MnumThreads(num_threads)
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+          Tbase(nullptr, std::move(builder)), MnumThreads(num_threads)
+#else
+          Tbase(std::move(builder)), MnumThreads(num_threads)
+#endif
       { }
       /*!
        * constructor
@@ -91,10 +98,16 @@ namespace optimize
        * \param num_threads Number of threads the algorithm uses for parallel
        * computation
        */
-      GridSearch(ParameterSpaceBuilder<Ctype, CresultData>* builder, 
-          std::vector<Parameter<Ctype> const*> const parameters,
+      GridSearch(
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
+          std::vector<std::shared_ptr<Parameter<Ctype> const>> const parameters,
           size_t num_threads=0) :
-          Tbase(0, builder, parameters), MnumThreads(num_threads)
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+          Tbase(nullptr, std::move(builder), parameters),
+          MnumThreads(num_threads)
+#else
+          Tbase(std::move(builder), parameters), MnumThreads(num_threads)
+#endif
       { }
       /*!
        * Construct a parameter space. Before constructing a parameter space for
@@ -134,7 +147,7 @@ namespace optimize
   void GridSearch<Ctype, CresultData>::execute(
       ParameterSpaceVisitor<Ctype, CresultData>& v)
   {
-    OPTIMIZE_assert(Tbase::MparameterSpace != 0, "Missing parameter space.");
+    OPTIMIZE_assert(Tbase::MparameterSpace, "Missing parameter space.");
 
     Iterator<Ctype, CresultData> iter(
         Tbase::MparameterSpace->createIterator(ForwardNodeIter));

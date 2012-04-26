@@ -29,12 +29,14 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 20/02/2012  V0.1  Daniel Armbruster
+ * 20/02/2012   V0.1    Daniel Armbruster
+ * 25/04/2012   V0.2    Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
 
 #include <vector>
+#include <memory>
 #include <optimizexx/gridcomponent.h>
 #include <optimizexx/parameter.h>
  
@@ -83,7 +85,8 @@ namespace optimize
        *
        * \param parameters parameters for the parameter space.
        */
-      virtual void buildGrid(std::vector<Parameter<Ctype> const*> const&
+      virtual void buildGrid(
+          typename std::vector<std::shared_ptr<Parameter<Ctype> const>> const&
           parameters)
       { }
       /*!
@@ -93,28 +96,50 @@ namespace optimize
        * \param parameters parameters for the parameter space.
        */
       virtual void buildSubGrid(
-          std::vector<Parameter<Ctype> const*> const& parameters)
+          typename std::vector<std::shared_ptr<Parameter<Ctype> const>> const&
+          parameters)
       { }
       //! destructor
-      virtual ~ParameterSpaceBuilder() { delete MparameterSpace; }
+      virtual ~ParameterSpaceBuilder() { }
       /*!
        * Query function for the built product which in this case is a parameter
        * space.
        *
-       * \return 0
+       * \return 0 respective nullptr
        */
-      virtual GridComponent<Ctype,CresultData>* getParameterSpace() { return 0; }
+      virtual typename std::unique_ptr<GridComponent<Ctype,CresultData>>
+        getParameterSpace() 
+      { 
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+        return nullptr;
+#else
+        // TODO TODO TODO TODO
+        //! fix this as soon as gcc 4.6 is available
+        return std::move(MparameterSpace); 
+#endif
+      }
 
     protected:
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
       //! constructor
       ParameterSpaceBuilder(
-          GridComponent<Ctype,CresultData>* parameterspace) : 
-          MparameterSpace(parameterspace)
+          typename std::unique_ptr<GridComponent<Ctype,CresultData>>
+          parameterspace) : MparameterSpace(std::move(parameterspace))
+#else
+      //! default constuctor
+      ParameterSpaceBuilder() : MparameterSpace(0) { }
+      
+      //! constructor
+      ParameterSpaceBuilder(
+          typename std::unique_ptr<GridComponent<Ctype,CresultData>>
+          parameterspace) : MparameterSpace(std::move(parameterspace))
+#endif
       { }
 
     protected:
       //! Pointer to the constructed parameter space.
-      GridComponent<Ctype, CresultData>* MparameterSpace;
+      typename std::unique_ptr<GridComponent<Ctype, CresultData>>
+        MparameterSpace;
 
   }; // class ParameterSpaceBuilder 
 

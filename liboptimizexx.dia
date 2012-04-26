@@ -1477,16 +1477,16 @@ Composite;#</dia:string>
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O5">
       <dia:attribute name="obj_pos">
-        <dia:point val="42.2378,-22.1037"/>
+        <dia:point val="51.713,-23.3765"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="42.1878,-22.1537;70.5228,-19.5537"/>
+        <dia:rectangle val="51.663,-23.4265;79.998,-20.8265"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="42.2378,-22.1037"/>
+        <dia:point val="51.713,-23.3765"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="28.235000000000003"/>
@@ -1516,7 +1516,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="42.5878,-20.8587"/>
+            <dia:point val="52.063,-22.1315"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -1570,16 +1570,16 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O7">
       <dia:attribute name="obj_pos">
-        <dia:point val="-30.1889,15.8243"/>
+        <dia:point val="-42.3511,15.8243"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-30.2389,14.2743;4.2661,24.8743"/>
+        <dia:rectangle val="-42.4011,14.2743;-1.7361,24.8743"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-30.1889,15.8243"/>
+        <dia:point val="-42.3511,15.8243"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="28.605"/>
+        <dia:real val="34.765000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="9"/>
@@ -1677,7 +1677,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
             <dia:string>#MparameterSpace#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#GridComponent&lt;Ctype,CresultData&gt;*#</dia:string>
+            <dia:string>#std::unique_ptr&lt;GridComponent&lt;Ctype,CresultData&gt;&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>
@@ -1826,7 +1826,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
                 <dia:string>#param#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; const*&gt; const&amp;#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt; const&amp;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -1874,7 +1874,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
                 <dia:string>#param#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; const*&gt; const&amp; param#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt; const&amp; param#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -1922,7 +1922,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
                 <dia:string>##</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#GridComponent*#</dia:string>
+                <dia:string>#std::unique_ptr&lt;GridComponent&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -1991,19 +1991,19 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="UML - Realizes" version="1" id="O8">
       <dia:attribute name="obj_pos">
-        <dia:point val="-15.8864,24.8746"/>
+        <dia:point val="-24.9686,24.8746"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-16.7364,24.8246;-15.0364,28.916"/>
+        <dia:rectangle val="-25.8186,24.8246;-24.1186,28.916"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-15.8864,24.8746"/>
-        <dia:point val="-15.8864,27.2703"/>
-        <dia:point val="-15.8856,27.2703"/>
-        <dia:point val="-15.8856,28.866"/>
+        <dia:point val="-24.9686,24.8746"/>
+        <dia:point val="-24.9686,27.2703"/>
+        <dia:point val="-24.9754,27.2703"/>
+        <dia:point val="-24.9754,28.866"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -2731,19 +2731,19 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O10">
       <dia:attribute name="obj_pos">
-        <dia:point val="-29.4181,30.4163"/>
+        <dia:point val="-41.5879,30.4163"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-29.4681,28.8663;3.4969,37.2663"/>
+        <dia:rectangle val="-41.6379,28.8663;-2.5129,38.0663"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-29.4181,30.4163"/>
+        <dia:point val="-41.5879,30.4163"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="27.064999999999998"/>
+        <dia:real val="33.225000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="6.7999999999999998"/>
+        <dia:real val="7.5999999999999996"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#StandardParameterSpaceBuilder#</dia:string>
@@ -2993,7 +2993,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
                 <dia:string>#parameters#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; const*&gt; const&amp;#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt; const&amp;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -3035,7 +3035,25 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
           <dia:attribute name="class_scope">
             <dia:boolean val="false"/>
           </dia:attribute>
-          <dia:attribute name="parameters"/>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#std::unique_ptr&lt;GridComponent&lt;Ctype, CresultData&gt;&gt;#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="2"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
         </dia:composite>
       </dia:attribute>
       <dia:attribute name="template">
@@ -3098,17 +3116,17 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="obj_pos">
-        <dia:point val="-15.8864,14.2739"/>
+        <dia:point val="-24.9686,14.2739"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-16.6364,5.15557;75.1785,15.0739"/>
+        <dia:rectangle val="-25.7186,5.15557;75.1785,15.0739"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-15.8864,14.2739"/>
-        <dia:point val="-15.8864,9.38975"/>
+        <dia:point val="-24.9686,14.2739"/>
+        <dia:point val="-24.9686,9.38975"/>
         <dia:point val="74.5935,9.38975"/>
         <dia:point val="74.5935,5.20557"/>
       </dia:attribute>
@@ -3621,16 +3639,16 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O17">
       <dia:attribute name="obj_pos">
-        <dia:point val="42.75,-11.5478"/>
+        <dia:point val="43.8814,-13.2449"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="42.7,-11.5978;55.25,-9.7978"/>
+        <dia:rectangle val="43.8314,-13.2949;56.3814,-11.4949"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="42.75,-11.5478"/>
+        <dia:point val="43.8814,-13.2449"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="12.450000000000001"/>
@@ -3659,7 +3677,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="43.1,-10.3028"/>
+            <dia:point val="44.2314,-11.9999"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -3672,13 +3690,13 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="Standard - Line" version="0" id="O18">
       <dia:attribute name="obj_pos">
-        <dia:point val="55.2,-10.6978"/>
+        <dia:point val="56.3314,-12.3949"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="55.1351,-10.7627;57.6617,-9.53919"/>
+        <dia:rectangle val="56.2647,-12.4616;57.7778,-9.67814"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="55.2,-10.6978"/>
+        <dia:point val="56.3314,-12.3949"/>
         <dia:point val="57.596,-9.7448"/>
       </dia:attribute>
       <dia:attribute name="numcp">
@@ -3703,16 +3721,16 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O19">
       <dia:attribute name="obj_pos">
-        <dia:point val="-36.4572,21.9839"/>
+        <dia:point val="-48.6194,21.9839"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-36.5072,21.9339;-32.0422,23.7339"/>
+        <dia:rectangle val="-48.6694,21.9339;-44.2044,23.7339"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-36.4572,21.9839"/>
+        <dia:point val="-48.6194,21.9839"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="4.3649999999999993"/>
@@ -3741,7 +3759,7 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="-36.1072,23.2289"/>
+            <dia:point val="-48.2694,23.2289"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -3754,14 +3772,14 @@ Actually the full grid will be build up by using the Builder pattern.#</dia:stri
     </dia:object>
     <dia:object type="Standard - Line" version="0" id="O20">
       <dia:attribute name="obj_pos">
-        <dia:point val="-32.0922,22.8339"/>
+        <dia:point val="-44.2544,22.8339"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-32.1563,22.7698;-30.1224,23.7405"/>
+        <dia:rectangle val="-44.3185,22.7698;-42.2846,23.7405"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="-32.0922,22.8339"/>
-        <dia:point val="-30.1889,23.5243"/>
+        <dia:point val="-44.2544,22.8339"/>
+        <dia:point val="-42.3511,23.5243"/>
       </dia:attribute>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
@@ -3879,16 +3897,16 @@ See GoF p.169#</dia:string>
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O23">
       <dia:attribute name="obj_pos">
-        <dia:point val="-5.80328,24.3902"/>
+        <dia:point val="-5.87399,25.4509"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-5.85328,24.3402;10.5467,26.1402"/>
+        <dia:rectangle val="-5.92399,25.4009;10.476,27.2009"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-5.80328,24.3902"/>
+        <dia:point val="-5.87399,25.4509"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="16.300000000000001"/>
@@ -3917,7 +3935,7 @@ See GoF p.169#</dia:string>
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="-5.45328,25.6352"/>
+            <dia:point val="-5.52399,26.6959"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -4990,7 +5008,7 @@ See GoF p.169#</dia:string>
         <dia:point val="32.8296,49.3231"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-16.3356,36.816;32.8796,51.7085"/>
+        <dia:rectangle val="-25.4254,37.6165;32.8796,51.7085"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -4998,8 +5016,8 @@ See GoF p.169#</dia:string>
       <dia:attribute name="orth_points">
         <dia:point val="32.8296,49.3231"/>
         <dia:point val="32.8296,50.8585"/>
-        <dia:point val="-15.8856,50.8585"/>
-        <dia:point val="-15.8856,37.266"/>
+        <dia:point val="-24.9754,50.8585"/>
+        <dia:point val="-24.9754,38.0665"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -5034,7 +5052,7 @@ See GoF p.169#</dia:string>
         <dia:point val="8.98872,43.0332"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-16.3356,36.8165;9.03872,44.9424"/>
+        <dia:rectangle val="-25.4254,37.6157;9.03872,44.9424"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -5042,8 +5060,8 @@ See GoF p.169#</dia:string>
       <dia:attribute name="orth_points">
         <dia:point val="8.98872,43.0332"/>
         <dia:point val="8.98872,44.0924"/>
-        <dia:point val="-15.8856,44.0924"/>
-        <dia:point val="-15.8856,37.2665"/>
+        <dia:point val="-24.9754,44.0924"/>
+        <dia:point val="-24.9754,38.0657"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -5146,16 +5164,16 @@ See GoF p.169#</dia:string>
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O30">
       <dia:attribute name="obj_pos">
-        <dia:point val="-44.8762,38.8455"/>
+        <dia:point val="-57.046,38.8455"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-44.9262,38.7955;-17.7462,40.5955"/>
+        <dia:rectangle val="-57.096,38.7955;-29.916,40.5955"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-44.8762,38.8455"/>
+        <dia:point val="-57.046,38.8455"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="27.080000000000002"/>
@@ -5184,7 +5202,7 @@ See GoF p.169#</dia:string>
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="-44.5262,40.0905"/>
+            <dia:point val="-56.696,40.0905"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -18798,7 +18816,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:point val="-43.5735,-30.1062"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-43.6235,-31.9562;30.7653,5.34931"/>
+        <dia:rectangle val="-43.6235,-31.9562;42.0081,5.34931"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -18807,7 +18825,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:point val="-43.5735,-30.1062"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="74.288790734523985"/>
+        <dia:real val="85.531596149580878"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="35.405507569441781"/>
@@ -18836,16 +18854,16 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:point val="-22.3987,-27.6761"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-22.4487,-29.2261;15.5213,-14.6261"/>
+        <dia:rectangle val="-22.4487,-29.2261;15.9063,-12.2261"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="-22.3987,-27.6761"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="32.07"/>
+        <dia:real val="32.454999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="13"/>
+        <dia:real val="15.400000000000002"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#GlobalAlgorithm#</dia:string>
@@ -18981,6 +18999,52 @@ see GoF p.315 Visitor design pattern.#</dia:string>
             <dia:boolean val="false"/>
           </dia:attribute>
         </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#Mparams#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter const&gt;&gt;#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#MsubGridParams#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#std::vector&lt;std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt;&gt;#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
       </dia:attribute>
       <dia:attribute name="operations">
         <dia:composite type="umloperation">
@@ -19095,7 +19159,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
                 <dia:string>#param#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#Parameter&lt;Ctype&gt; const*#</dia:string>
+                <dia:string>#std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -19143,7 +19207,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
                 <dia:string>#params#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;std::unique_ptr&lt;const Parameter&lt;Ctype&gt;&gt;&gt;#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;const Parameter&lt;Ctype&gt; const&gt;&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -19255,6 +19319,54 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
+            <dia:string>#getParameterSpaceDimensions#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#const#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#size_t#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="2"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
             <dia:string>#GlobalAlgorithm#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
@@ -19317,7 +19429,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
                 <dia:string>#parameters#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; &gt; const#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -19357,16 +19469,16 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O104">
       <dia:attribute name="obj_pos">
-        <dia:point val="-42.9559,-6.7401"/>
+        <dia:point val="-43.0973,-6.7401"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-43.0059,-8.2901;-6.9609,1.5099"/>
+        <dia:rectangle val="-43.1473,-8.2901;-0.9423,1.5099"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-42.9559,-6.7401"/>
+        <dia:point val="-43.0973,-6.7401"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="30.145"/>
+        <dia:real val="36.305"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="8.1999999999999993"/>
@@ -19600,7 +19712,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
                 <dia:string>#parameters#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; const*&gt;#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -19735,19 +19847,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Realizes" version="1" id="O105">
       <dia:attribute name="obj_pos">
-        <dia:point val="-6.3637,-14.6257"/>
+        <dia:point val="-6.1712,-12.2256"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-27.9334,-14.6757;-5.5137,-8.24044"/>
+        <dia:rectangle val="-24.9948,-12.2756;-5.3212,-8.24044"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-6.3637,-14.6257"/>
-        <dia:point val="-6.3637,-11.0581"/>
-        <dia:point val="-27.8834,-11.0581"/>
-        <dia:point val="-27.8834,-8.29044"/>
+        <dia:point val="-6.1712,-12.2256"/>
+        <dia:point val="-6.1712,-9.85804"/>
+        <dia:point val="-24.9448,-9.85804"/>
+        <dia:point val="-24.9448,-8.29044"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -19770,23 +19882,23 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:string>##</dia:string>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O103" connection="28"/>
+        <dia:connection handle="0" to="O103" connection="34"/>
         <dia:connection handle="1" to="O104" connection="18"/>
       </dia:connections>
       <dia:childnode parent="O102"/>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O106">
       <dia:attribute name="obj_pos">
-        <dia:point val="-6.26071,-6.82695"/>
+        <dia:point val="-0.745277,-6.82695"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-6.31071,-8.37695;30.1193,3.82305"/>
+        <dia:rectangle val="-0.795277,-8.37695;41.7947,3.82305"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-6.26071,-6.82695"/>
+        <dia:point val="-0.745277,-6.82695"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="30.530000000000001"/>
+        <dia:real val="36.689999999999998"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="10.6"/>
@@ -20060,7 +20172,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
                 <dia:string>#parameters#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::vector&lt;Parameter&lt;Ctype&gt; const*&gt;#</dia:string>
+                <dia:string>#std::vector&lt;std::shared_ptr&lt;Parameter&lt;Ctype&gt; const&gt;&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -20212,19 +20324,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Realizes" version="1" id="O107">
       <dia:attribute name="obj_pos">
-        <dia:point val="-6.3637,-14.6257"/>
+        <dia:point val="-6.1712,-12.2256"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-7.2137,-14.6757;9.05429,-8.32737"/>
+        <dia:rectangle val="-7.0212,-12.2756;17.6497,-8.32737"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-6.3637,-14.6257"/>
-        <dia:point val="-6.3637,-11.1015"/>
-        <dia:point val="9.00429,-11.1015"/>
-        <dia:point val="9.00429,-8.37737"/>
+        <dia:point val="-6.1712,-12.2256"/>
+        <dia:point val="-6.1712,-9.9015"/>
+        <dia:point val="17.5997,-9.9015"/>
+        <dia:point val="17.5997,-8.37737"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -20247,20 +20359,20 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:string>##</dia:string>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O103" connection="28"/>
+        <dia:connection handle="0" to="O103" connection="34"/>
         <dia:connection handle="1" to="O106" connection="20"/>
       </dia:connections>
       <dia:childnode parent="O102"/>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O108">
       <dia:attribute name="obj_pos">
-        <dia:point val="17.6662,-23.3159"/>
+        <dia:point val="20.7775,-22.1416"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="17.6162,-23.3659;28.2262,-18.9659"/>
+        <dia:rectangle val="20.7275,-22.1916;31.3375,-17.7916"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="17.6662,-23.3159"/>
+        <dia:point val="20.7775,-22.1416"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="10.51"/>
@@ -20426,19 +20538,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Realizes" version="1" id="O109">
       <dia:attribute name="obj_pos">
-        <dia:point val="15.5216,-21.1761"/>
+        <dia:point val="15.9066,-19.9761"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="15.4716,-22.0261;17.6659,-20.321"/>
+        <dia:rectangle val="15.8566,-20.8261;20.7772,-19.1261"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="15.5216,-21.1761"/>
-        <dia:point val="16.9688,-21.1761"/>
-        <dia:point val="16.9688,-21.1659"/>
-        <dia:point val="17.6159,-21.1659"/>
+        <dia:point val="15.9066,-19.9761"/>
+        <dia:point val="18.7169,-19.9761"/>
+        <dia:point val="18.7169,-19.9916"/>
+        <dia:point val="20.7272,-19.9916"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -20461,20 +20573,20 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:string>##</dia:string>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O103" connection="28"/>
+        <dia:connection handle="0" to="O103" connection="34"/>
         <dia:connection handle="1" to="O108" connection="12"/>
       </dia:connections>
       <dia:childnode parent="O102"/>
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O110">
       <dia:attribute name="obj_pos">
-        <dia:point val="-40.9777,-23.3053"/>
+        <dia:point val="-41.0484,-22.131"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-41.0277,-23.3553;-30.4177,-18.9553"/>
+        <dia:rectangle val="-41.0984,-22.181;-30.4884,-17.781"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-40.9777,-23.3053"/>
+        <dia:point val="-41.0484,-22.131"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="10.51"/>
@@ -20640,19 +20752,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Realizes" version="1" id="O111">
       <dia:attribute name="obj_pos">
-        <dia:point val="-22.4492,-21.1761"/>
+        <dia:point val="-22.4492,-19.9761"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-30.4674,-22.0261;-22.3992,-20.3157"/>
+        <dia:rectangle val="-30.5381,-20.8261;-22.3992,-19.1261"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-22.4492,-21.1761"/>
-        <dia:point val="-26.8333,-21.1761"/>
-        <dia:point val="-26.8333,-21.1553"/>
-        <dia:point val="-30.4174,-21.1553"/>
+        <dia:point val="-22.4492,-19.9761"/>
+        <dia:point val="-26.8686,-19.9761"/>
+        <dia:point val="-26.8686,-19.981"/>
+        <dia:point val="-30.4881,-19.981"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -20675,7 +20787,7 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:string>##</dia:string>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O103" connection="28"/>
+        <dia:connection handle="0" to="O103" connection="34"/>
         <dia:connection handle="1" to="O110" connection="12"/>
       </dia:connections>
       <dia:childnode parent="O102"/>
@@ -20721,16 +20833,16 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:point val="-55.705,-6.2456"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-55.755,-6.9956;-42.9564,-1.7901"/>
+        <dia:rectangle val="-55.755,-6.9956;-43.0976,-1.7901"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="-55.705,-6.2456"/>
-        <dia:point val="-49.3557,-6.2456"/>
-        <dia:point val="-49.3557,-2.6401"/>
-        <dia:point val="-43.0064,-2.6401"/>
+        <dia:point val="-49.4263,-6.2456"/>
+        <dia:point val="-49.4263,-2.6401"/>
+        <dia:point val="-43.1476,-2.6401"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -20789,19 +20901,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="obj_pos">
-        <dia:point val="9.00429,3.82338"/>
+        <dia:point val="17.5997,3.82338"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-15.9364,3.07338;9.93929,15.0739"/>
+        <dia:rectangle val="-25.0186,3.07338;18.5347,15.0739"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="9.00429,3.82338"/>
-        <dia:point val="9.00429,9.39865"/>
-        <dia:point val="-15.8864,9.39865"/>
-        <dia:point val="-15.8864,14.2739"/>
+        <dia:point val="17.5997,3.82338"/>
+        <dia:point val="17.5997,9.39865"/>
+        <dia:point val="-24.9686,9.39865"/>
+        <dia:point val="-24.9686,14.2739"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -20860,19 +20972,19 @@ see GoF p.315 Visitor design pattern.#</dia:string>
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="obj_pos">
-        <dia:point val="-27.8834,1.51015"/>
+        <dia:point val="-24.9448,1.51015"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-28.6334,0.760153;-15.3014,15.0739"/>
+        <dia:rectangle val="-25.6948,0.760153;-24.0098,15.0739"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="-27.8834,1.51015"/>
-        <dia:point val="-27.8834,8.24204"/>
-        <dia:point val="-15.8864,8.24204"/>
-        <dia:point val="-15.8864,14.2739"/>
+        <dia:point val="-24.9448,1.51015"/>
+        <dia:point val="-24.9448,8.24204"/>
+        <dia:point val="-24.9686,8.24204"/>
+        <dia:point val="-24.9686,14.2739"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -20977,16 +21089,16 @@ see GoF p.315 Visitor design pattern.#</dia:string>
     </dia:object>
     <dia:object type="UML - Note" version="0" id="O117">
       <dia:attribute name="obj_pos">
-        <dia:point val="-75.9694,20.6452"/>
+        <dia:point val="-94.3694,22.2452"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-76.0194,20.5952;-38.0594,36.7952"/>
+        <dia:rectangle val="-94.4194,22.1952;-56.4594,38.3952"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-75.9694,20.6452"/>
+        <dia:point val="-94.3694,22.2452"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="37.859999999999999"/>
@@ -21033,7 +21145,7 @@ functionions. BEST APPROACH.#</dia:string>
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="-75.6194,21.8902"/>
+            <dia:point val="-94.0194,23.4902"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>

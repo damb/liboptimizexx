@@ -29,12 +29,14 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 20/02/2012  V0.1  Daniel Armbruster
+ * 20/02/2012  V0.1   Daniel Armbruster
+ * 25/04/2012  V0.2   Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
 
 #include <vector>
+#include <memory>
 #include <optimizexx/builder.h>
 #include <optimizexx/gridcomponent.h>
 #include <optimizexx/parameter.h>
@@ -86,9 +88,8 @@ namespace optimize
       //! destructor
       virtual ~GlobalAlgorithm() { }
       //! add a parameter or rather add an additional component to the grid
-      void addParameter(Parameter<Ctype> const* param);
-      //! query function for parameters
-      std::vector<Parameter<Ctype> const*> const& getParameter() const;
+      void addParameter(typename 
+          std::shared_ptr<Parameter<Ctype> const> param);
       /*!
        * query function for parameter space
        *
@@ -106,57 +107,87 @@ namespace optimize
        */
       ParameterSpaceBuilder<Ctype, CresultData> const&
         getParameterSpaceBuilder() const;
+      /*!
+       * query function for dimension of parameter space
+       *
+       * This function will return the dimension of the base parameter space,
+       * independently how many dimensions possibly available subgrids possess.
+       *
+       * \return dimension of base parameter space
+       */
+      size_t getParameterSpaceDimensions() const { return Mparameters.size(); }
 
     protected:
       //! constructor
-      GlobalAlgorithm(GridComponent<Ctype, CresultData>* parameterspace,
-          ParameterSpaceBuilder<Ctype, CresultData>* builder) : 
-          MparameterSpace(parameterspace), MparameterSpaceBuilder(builder)
+      GlobalAlgorithm(
+          std::unique_ptr<GridComponent<Ctype, CresultData>> parameterspace,
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder) : 
+          MparameterSpace(std::move(parameterspace)),
+          MparameterSpaceBuilder(std::move(builder))
       { }
          
 
       //! constructor
-      GlobalAlgorithm(GridComponent<Ctype, CresultData>* parameterspace, 
-          ParameterSpaceBuilder<Ctype, CresultData>* builder,
-          std::vector<Parameter<Ctype> const*> parameters) :
-          MparameterSpace(parameterspace), MparameterSpaceBuilder(builder),
+      GlobalAlgorithm(
+          std::unique_ptr<GridComponent<Ctype, CresultData>> parameterspace, 
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
+          std::vector<std::shared_ptr<Parameter<Ctype> const>> parameters) :
+          MparameterSpace(std::move(parameterspace)),
+          MparameterSpaceBuilder(std::move(builder)),
           Mparameters(parameters) 
       { 
-        for (typename std::vector<Parameter<Ctype> const*>::const_iterator cit(
-            Mparameters.begin()); cit != Mparameters.end(); ++cit)
+        for (auto cit(Mparameters.cbegin()); cit != Mparameters.cend(); ++cit)
         {
           OPTIMIZE_assert((*cit)->isValid(), "Invalid parameter.");
         }
       }
 
+#if __GNUC__ >= 4 && __GNUC_MINOR__ <= 5
+      //! constructor
+      GlobalAlgorithm(        
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder) : 
+          MparameterSpace(0),
+          MparameterSpaceBuilder(std::move(builder))
+      { }
+         
+
+      //! constructor
+      GlobalAlgorithm(
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
+          std::vector<std::shared_ptr<Parameter<Ctype> const>> parameters) :
+          MparameterSpace(0),
+          MparameterSpaceBuilder(std::move(builder)),
+          Mparameters(parameters) 
+      { 
+        for (auto cit(Mparameters.cbegin()); cit != Mparameters.cend(); ++cit)
+        {
+          OPTIMIZE_assert((*cit)->isValid(), "Invalid parameter.");
+        }
+      }
+
+#endif
+
     protected:
       //! Pointer to the parameter space
-      GridComponent<Ctype, CresultData>* MparameterSpace;
+      std::unique_ptr<GridComponent<Ctype, CresultData>> MparameterSpace;
       //! Pointer to a parameter space builder
-      ParameterSpaceBuilder<Ctype, CresultData>* MparameterSpaceBuilder;
+      std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>>
+        MparameterSpaceBuilder;
       /*!
        * The parameters of which the parameter space builder will put up the
        * grid.
        */
-      std::vector<Parameter<Ctype> const*> Mparameters;
+      std::vector<std::shared_ptr<Parameter<Ctype> const>> Mparameters;
 
   }; // class template GlobalAlgorithm
 
   /* ======================================================================= */
   template <typename Ctype, typename CresultData>
   void GlobalAlgorithm<Ctype, CresultData>::addParameter(
-      Parameter<Ctype> const* param) 
+      typename std::shared_ptr<Parameter<Ctype> const> param) 
   {
     OPTIMIZE_assert(param->isValid(), "Invalid parameter.");
     Mparameters.push_back(param);
-  }
-
-  /* ----------------------------------------------------------------------- */
-  template <typename Ctype, typename CresultData>
-  std::vector<Parameter<Ctype> const*> const& 
-  GlobalAlgorithm<Ctype, CresultData>::getParameter() const
-  {
-    return Mparameters;
   }
 
   /* ----------------------------------------------------------------------- */

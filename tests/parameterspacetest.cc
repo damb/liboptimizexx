@@ -29,13 +29,15 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 12/03/2012  V0.1  Daniel Armbruster
+ * 12/03/2012   V0.1    Daniel Armbruster
+ * 25/04/2012   V0.2    Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
  
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <optimizexx/parameter.h>
 #include <optimizexx/standardbuilder.h>
 #include <optimizexx/gridcomponent.h>
@@ -49,12 +51,12 @@ int main ()
   typedef int TresultType;
 
   // create parameters
-  opt::Parameter<TcoordType> const* param1 = 
-    new opt::StandardParameter<TcoordType>("param1",0,10,1.);
-  opt::Parameter<TcoordType> const* param2 = 
-    new opt::StandardParameter<TcoordType>("param2",0,2,0.5);
-  opt::Parameter<TcoordType> const* param3 = 
-    new opt::StandardParameter<TcoordType>("param3",0,1.,0.25);
+  std::shared_ptr<opt::Parameter<TcoordType> const> param1( 
+    new opt::StandardParameter<TcoordType>("param1",0,10,1.));
+  std::shared_ptr<opt::Parameter<TcoordType> const> param2( 
+    new opt::StandardParameter<TcoordType>("param2",0,2,0.5));
+  std::shared_ptr<opt::Parameter<TcoordType> const> param3( 
+    new opt::StandardParameter<TcoordType>("param3",0,1.,0.25));
 
   std::cout << "param1: start: " << param1->getStart() 
     << " end: " << param1->getEnd() 
@@ -69,7 +71,7 @@ int main ()
   // create parameter space builder
   opt::StandardParameterSpaceBuilder<TcoordType, TresultType> builder;
 
-  std::vector<opt::Parameter<TcoordType> const*> params;
+  std::vector<std::shared_ptr<opt::Parameter<TcoordType> const>> params;
   params.push_back(param1);
   params.push_back(param2);
   params.push_back(param3);
@@ -79,7 +81,7 @@ int main ()
   builder.buildGrid(params);
 
   // get parameter space
-  opt::GridComponent<TcoordType, TresultType>* parameterspace = 
+  std::unique_ptr<opt::GridComponent<TcoordType, TresultType>> parameterspace = 
     builder.getParameterSpace();
   
   // create parameter space application
@@ -87,9 +89,6 @@ int main ()
 
   // send an application into the grid
   parameterspace->accept(app);
-
-  delete param1;
-  delete param2;
 
   return 0;
 

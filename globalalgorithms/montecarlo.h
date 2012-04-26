@@ -31,11 +31,13 @@
  * REVISIONS and CHANGES 
  * 16/03/2012   V0.1    Daniel Armbruster
  * 18/04/2012   V0.2    Completely use C++0x.
+ * 25/04/2012   V0.3    Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
 
 #include <iostream>
+#include <memory>
 #include <random>
 #include <functional>
 #include <optimizexx/globalalgorithm.h>
@@ -92,12 +94,18 @@ namespace optimize
       /*!
        * constructor
        *
-       * \param parameterspacebuilder Pointer to a builder of a parameter space.
+       * \param builder Pointer to a builder of a parameter space.
        * \param distr type of probability distribution
        */
-      MonteCarlo(ParameterSpaceBuilder<Ctype, CresultData>* builder,
+      MonteCarlo(
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
           Edistribution distr=Normal, float const percent=5) : 
-          Tbase(0, builder), Mdistribution(distr), Mpercentage(percent)
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+          Tbase(nullptr, std::move(builder)), Mdistribution(distr),
+#else
+          Tbase(std::move(builder)), Mdistribution(distr),
+#endif
+          Mpercentage(percent)
       { 
         OPTIMIZE_assert(Mpercentage > 0 && Mpercentage <= 100.,
             "Illegal value.");
@@ -110,10 +118,15 @@ namespace optimize
        * \param parameters STL vector of parameters.
        * \param distr type of probability distribution
        */
-      MonteCarlo(ParameterSpaceBuilder<Ctype, CresultData>* builder, 
-          std::vector<Parameter<Ctype> const*> const parameters,
+      MonteCarlo(
+          std::unique_ptr<ParameterSpaceBuilder<Ctype, CresultData>> builder,
+          std::vector<std::shared_ptr<Parameter<Ctype> const>> const parameters,
           Edistribution distr=Normal, float const percent=5) :
-          Tbase(0, builder, parameters), Mdistribution(distr),
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+          Tbase(nullptr, std::move(builder), parameters), Mdistribution(distr),
+#else
+          Tbase(std::move(builder), parameters), Mdistribution(distr),
+#endif
           Mpercentage(percent)
       { 
         OPTIMIZE_assert(Mpercentage > 0 && Mpercentage <= 100.,
@@ -161,7 +174,7 @@ namespace optimize
   void MonteCarlo<Ctype, CresultData>::execute(
       ParameterSpaceVisitor<Ctype, CresultData>& v)
   {
-    OPTIMIZE_assert(Tbase::MparameterSpace != 0, "Missing parameter space.");
+    OPTIMIZE_assert(Tbase::MparameterSpace, "Missing parameter space.");
 
     Iterator<Ctype, CresultData> iter(
         Tbase::MparameterSpace->createIterator(ForwardNodeIter));
@@ -175,7 +188,6 @@ namespace optimize
           iter, iter_last);
 
     std::vector<unsigned int> indices((Mpercentage/100.)*num_elements);
-    std::cout << "num_indices: " << indices.size() << std::endl;
 
     // generate vector with random numbers
     unsigned int mean = num_elements/2;
@@ -206,10 +218,8 @@ namespace optimize
     for (size_t i = 0; i < indices.size(); ++i)
     {
       indices[i] = std::round(generator()); 
-      std::cout << indices[i] << std::endl;
     }
-    for (std::vector<unsigned int>::const_iterator cit(indices.begin());
-        cit != indices.end(); ++cit)
+    for (auto cit(indices.cbegin()); cit != indices.cend(); ++cit)
     {
       iter.first();
       advance<Iterator<Ctype, CresultData>>(iter, *cit);

@@ -29,7 +29,8 @@
  * Copyright (c) 2012 by Daniel Armbruster
  * 
  * REVISIONS and CHANGES 
- * 13/03/2012  V0.1  Daniel Armbruster
+ * 13/03/2012   V0.1    Daniel Armbruster
+ * 25/04/2012   V0.2    Make use of smart pointers and C++0x.
  * 
  * ============================================================================
  */
@@ -44,6 +45,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <memory>
 #include <optimizexx/parameter.h>
 #include <optimizexx/standardbuilder.h>
 #include <optimizexx/gridcomponent.h>
@@ -56,25 +58,25 @@ int main ()
   typedef double TcoordType;
   typedef double TresultType;
   // create parameters
-  opt::Parameter<TcoordType> const* param1 =
-    new opt::StandardParameter<TcoordType>("param1",0,1.,0.5);
-  opt::Parameter<TcoordType> const* param2 =
-    new opt::StandardParameter<TcoordType>("param2",-1,1.,1.);
+  std::shared_ptr<opt::Parameter<TcoordType> const> param1( 
+    new opt::StandardParameter<TcoordType>("param1",0,1.,0.5));
+  std::shared_ptr<opt::Parameter<TcoordType> const> param2( 
+    new opt::StandardParameter<TcoordType>("param2",-1,1.,1.));
   
-  std::vector<optimize::Parameter<TcoordType> const*> params;
+  std::vector<std::shared_ptr<optimize::Parameter<TcoordType> const>> params;
   params.push_back(param1);
   params.push_back(param2);
 
   // create parameter space builder
-  opt::ParameterSpaceBuilder<TcoordType, TresultType>* builder =
-      new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>;
+  std::unique_ptr<opt::ParameterSpaceBuilder<TcoordType, TresultType>> builder(
+      new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>);
 
   // build parameter space
   builder->buildParameterSpace();
   builder->buildGrid(params);
 
   // get parameter space
-  opt::GridComponent<TcoordType, TresultType>* parameterSpace = 
+  std::unique_ptr<opt::GridComponent<TcoordType, TresultType>> parameterSpace = 
     builder->getParameterSpace();
 
   // test usual iterator
@@ -113,14 +115,12 @@ int main ()
     std::vector<TcoordType> const& c = (*it)->getCoordinates();
     std::vector<std::string> const& ids = (*it)->getCoordinateId();
 
-    for (std::vector<TcoordType>::const_iterator cit(c.begin());
-        cit != c.end(); ++cit)
+    for (auto cit(c.cbegin()); cit != c.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
 
-    for (std::vector<std::string>::const_iterator cit(ids.begin());
-        cit != ids.end(); ++cit)
+    for (auto cit(ids.cbegin()); cit != ids.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
@@ -141,14 +141,12 @@ int main ()
     std::vector<TcoordType> const& c = (*it)->getCoordinates();
     std::vector<std::string> const& ids = (*it)->getCoordinateId();
 
-    for (std::vector<TcoordType>::const_iterator cit(c.begin());
-        cit != c.end(); ++cit)
+    for (auto cit(c.cbegin()); cit != c.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
 
-    for (std::vector<std::string>::const_iterator cit(ids.begin());
-        cit != ids.end(); ++cit)
+    for (auto cit(ids.cbegin()); cit != ids.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
@@ -172,23 +170,17 @@ int main ()
     std::vector<TcoordType> const& c = (*it)->getCoordinates();
     std::vector<std::string> const& ids = (*it)->getCoordinateId();
 
-    for (std::vector<TcoordType>::const_iterator cit(c.begin());
-        cit != c.end(); ++cit)
+    for (auto cit(c.cbegin()); cit != c.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
 
-    for (std::vector<std::string>::const_iterator cit(ids.begin());
-        cit != ids.end(); ++cit)
+    for (auto cit(ids.cbegin()); cit != ids.cend(); ++cit)
     {
       std::cout << *cit << " ";
     }
     std::cout << std::endl;
   }
-
-  delete builder;
-  delete param1;
-  delete param2;
 
   return 0;
 
