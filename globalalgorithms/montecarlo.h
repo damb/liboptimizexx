@@ -219,6 +219,7 @@ namespace optimize
     {
       indices[i] = std::round(generator()); 
     }
+
     for (auto cit(indices.cbegin()); cit != indices.cend(); ++cit)
     {
       iter.first();

@@ -80,8 +80,6 @@ namespace optimize
   /*!
    * Advances the iterator \c iter by \c n elements.
    *
-   * \todo Not tested yet.
-   *
    * \param iter Iterator to be advanced.
    * \param n Number of elements to be advanced. If n is equal to or greater
    * than the number of children in the parameter space grid than \c iter will
@@ -92,7 +90,9 @@ namespace optimize
   template <typename Citerator>
   void advance(Citerator& iter, size_t n)
   {
-    while (! iter.isDone() && n > 0)
+    Citerator iter_last(iter);
+    iter_last.back();
+    while (iter != iter_last && n > 0)
     {
       --n;
       iter.next();
@@ -123,9 +123,6 @@ namespace optimize
     Citer_first iter(iter_first);
 
     size_t retval = 0;
-    std::cout << iter.isDone() << std::endl;
-    std::cout << iter_last.isDone() << std::endl;
-    std::cout << *iter << std::endl;
     while (! iter.isDone() && iter != iter_last)
     {
       ++retval;

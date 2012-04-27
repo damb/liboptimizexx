@@ -36,6 +36,7 @@
  */
  
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <memory>
 #include <optimizexx/parameter.h>
@@ -112,6 +113,7 @@ int main()
   opt::Iterator<TcoordType, TresultType> it(
       montecarlo->getParameterSpace().createIterator(opt::ForwardNodeIter));
 
+
   for (it.first(); !it.isDone(); ++it)
   {
     std::vector<TcoordType> const& c = (*it)->getCoordinates();
@@ -119,10 +121,10 @@ int main()
     {
       for (auto cit(c.cbegin()); cit != c.cend(); ++cit)
       {
-        std::cout << *cit << " ";
+        std::cout << std::setw(6) << std::right << *cit << " ";
       }
-      std::cout << std::endl;
-      //std::cout << (*it)->getResultData() << std::endl;
+      std::cout << std::setw(6) << std::right << (*it)->getResultData() 
+        << std::endl;
     }
   }
 

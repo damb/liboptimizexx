@@ -110,6 +110,9 @@ namespace optimize
       typedef Parameter<Ctype> Tbase;
     
     public:
+      //! default constructor
+      StandardParameter() : Tbase(""), Mstart(0), Mend(0), Mdelta(0), Munit("")
+      { }
       /*!
        * constructor
        *
