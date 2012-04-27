@@ -146,8 +146,6 @@ namespace optimize
    * pointers actually. This class corresponds to the \a Context class of the
    * Strategy design pattern in GoF.
    *
-   * \todo How to avoid the fact that the 
-   *
    * \ingroup group_iterator
    */
   template <typename Ctype, typename CresultData>

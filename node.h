@@ -112,13 +112,7 @@ namespace optimize
     private:
       //! Coordinates of the node.
       Tcoordinates Mcoordinates;
-      /*!
-       * Template parameter to store the results of the calculation.
-       *
-       * \todo Ask Thomas how to handle the result data properly which means to
-       * guarantee access over member functions or to provide public access for
-       * MresultData.
-       */
+      //! Template parameter to store the results of the calculation.
       CresultData MresultData;
 
   }; // class template Node

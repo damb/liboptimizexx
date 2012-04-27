@@ -130,9 +130,6 @@ the constructor. Notice, that default is optimize::Normal which refers to the
 Normal or Gaussian distribution. 
 After the calculation the results might be fetched using a
 optimize::iterator::ForwardNodeIterator.
-
-\todo Not tested yet. Implementation up to now throws Segmentation fault.
-
 */
 
 /*===========================================================================*/
@@ -189,13 +186,16 @@ third argument in the constructor defines the granularity of each component.
 
 \code
 #include <vector>
+#include <memory>
 #include <optimizexx/parameter.h>
 
 // create parameters
-opt::Parameter<TcoordType> param1(0,1.,0.25);
-opt::Parameter<TcoordType> param2(-1,1.,0.5);
+std::shared_ptr<opt::Parameter<TcoordType>> param1(
+  new opt::StandardParameter<TcoordType>(0,1.,0.25));
+std::shared_ptr<opt::Parameter<TcoordType>> param2(
+  new opt::StandardParameter<TcoordType>(-1,1.,0.5));
 
-std::vector<optimize::Parameter<TcoordType> > params;
+std::vector<std::shared_ptr<opt::Parameter<TcoordType>>> params;
 params.push_back(param1);
 params.push_back(param2);
 \endcode
@@ -207,8 +207,8 @@ necessary. Here we use an instance of optimize::StandardParameterSpaceBuilder.
 #include <optimizexx/standardbuilder.h>
 
 // create parameter space builder
-opt::ParameterSpaceBuilder<TcoordType, TresultType>* builder =
-  new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>;
+std::unique_ptr<opt::ParameterSpaceBuilder<TcoordType, TresultType>> builder(
+  new opt::StandardParameterSpaceBuilder<TcoordType, TresultType>);
 \endcode
 
 This is the time to generate the global algorithm, constructing the parameter
@@ -219,8 +219,8 @@ algorithm.
 #include <optimizexx/globalalgorithms/gridsearch.h>
 
 // create gridsearch algorithm
-opt::GridSearch<TcoordType, TresultType>* gridsearch = 
-  new opt::GridSearch<TcoordType, TresultType>(builder, params);
+std::unique_ptr<opt::GridSearch<TcoordType, TresultType>> gridsearch( 
+  new opt::GridSearch<TcoordType, TresultType>(std::move(builder), params));
 
 gridsearch->constructParameterSpace();
 
@@ -234,6 +234,9 @@ optimize::iterator::ForwardNodeIterator iterator strategy. Here the results
 only were printed to \c stdout.
 
 \code
+#include <iostream>
+#include <iterator.h>
+
 // print results using a forward node iterator
 opt::Iterator<TcoordType, TresultType> it = 
   gridsearch->getParameterSpace().createIterator(opt::ForwardNodeIter);
@@ -242,8 +245,7 @@ for (it.first(); !it.isDone(); ++it)
 {
   // print node coordinates
   std::vector<TcoordType> const& c = (*it)->getCoordinates();
-  for (std::vector<TcoordType>::const_iterator cit(c.begin());
-      cit != c.end(); ++cit)
+  for (auto cit(c.cbegin()); cit != c.cend(); ++cit)
   {
     std::cout << *cit << " ";
   }
@@ -252,14 +254,7 @@ for (it.first(); !it.isDone(); ++it)
 }
 \endcode
 
-To finish this short example the only thing to perform is to free the allocated
-memory.
-
-\code
-delete it;
-delete builder;
-delete gridsearch;
-\endcode
+That's it.
 
 \sa \ref page_global_algorithms
 \date March 2012

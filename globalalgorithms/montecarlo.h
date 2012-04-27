@@ -79,9 +79,6 @@ namespace optimize
    * random numbers will be generated else only calculating values using the
    * normal/gaussian distribution will be provided.
    *
-   * \todo Not tested yet.
-   * See also: http://www.cplusplus.com/doc/tutorial/typecasting/
-   *
    * \ingroup group_global_algos
    */
   template <typename Ctype, typename CresultData>
@@ -143,10 +140,6 @@ namespace optimize
        * \param v Reference to a ParameterSpaceVisitor or rather application.
        * For further information on how to implement an application for the
        * parameter space \sa ParameterSpace
-       *
-       * \todo Does not work properly yet. To determine the size of the
-       * parameter space composite I have to implement the
-       * optimize::iterator::ForwardNodeIterator::last function.
        */
       virtual void execute(ParameterSpaceVisitor<Ctype, CresultData>& v);
 
