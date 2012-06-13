@@ -1,6 +1,6 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-# $Id: $
+# $Id$
 # Copyright (c) 2012 by Daniel Armbruster 
 # ----
 # This file is part of liboptimizexx.
@@ -23,6 +23,8 @@
 # REVISIONS and CHANGES
 # 10/02/2012	V0.1	Daniel Armbruster (basically taken of Thomas Forbriger's
 # 									libaff library)
+# 13/06/2012  V0.2  Poviding package creation mechanism.
+#
 # ----------------------------------------------------------------------------
 
 .PHONY: all
@@ -269,4 +271,65 @@ doxyview: $(DOXYWWWPATH)/html/index.html
 tests/%: tests/%.cc install
 	@cd tests; echo "#############################"; $(MAKE) -s $(notdir $@)
 
+#======================================================================
+# create package
+# --------------
+# version code based on current date
+VERSIONCODE=$(shell date +'%Y%m%d')
+# name of the package (including version code)
+THEPACKAGE=liboptimizexx$(VERSIONCODE)
+# directory to place temporary files in
+TMPDIR=$(HOME)/tmp
+# path where the package will be created
+TMPPATH=$(TMPDIR)/$(THEPACKAGE)
+
+# tar file
+PACKAGETARFILE=$(THEPACKAGE).tar
+# gzipped tar file
+PACKAGEGZIPFILE=$(PACKAGETARFILE).gz
+# bzipped tar file
+PACKAGEBZIPFILE=$(PACKAGETARFILE).bz2
+
+# list of README files to be obtained from the subversion repository
+INFOFILESFROMSVNWITHPATH=src/LICENSE.GPL
+# list of files to be created
+INFOFILESFROMSVN=$(notdir $(INFOFILESFROMSVNWITHPATH))
+
+DIRFROMSVNWITHPATH=src/libs/liboptimizexx
+# list of files to be created
+DIRFROMSVN=$(notdir $(DIRFROMSVNWITHPATH))
+
+# rule for the creation of README files from the repository
+$(addprefix $(TMPPATH)/,$(INFOFILESFROMSVN)):
+	mkdir -pv $(dir $@)
+	svn export \
+	$(SVNDT)/trunk/$(filter %$(notdir $@),$(INFOFILESFROMSVNWITHPATH)) $@
+	
+# rule for the creation of csback files from the repository
+$(addprefix $(TMPPATH)/,$(DIRFROMSVN)):
+	mkdir -pv $(dir $@)
+	svn export $(SVNDT)/trunk/$(filter %$(notdir $@),$(DIRFROMSVNWITHPATH)) $@
+
+# create package tar archive
+$(TMPDIR)/$(PACKAGETARFILE): $(TMPPATH)
+	/bin/rm -fv $@
+	cd $</..; tar cvf $@ $(notdir $<)
+	/bin/rm -fv $(TMPDIR)/$(PACKAGEGZIPFILE) $(TMPDIR)/$(PACKAGEBZIPFILE)
+
+# create compressed archives
+$(TMPDIR)/$(PACKAGEGZIPFILE): $(TMPDIR)/$(PACKAGETARFILE)
+	/bin/cp -vf $< $<.sik
+	gzip -vf9 $<
+	/bin/mv $<.sik $<
+$(TMPDIR)/$(PACKAGEBZIPFILE): $(TMPDIR)/$(PACKAGETARFILE); bzip2 -vf9 $<
+
+.PHONY: package
+package:
+	- /bin/rm -rvf $(TMPPATH) 
+	$(MAKE) $(addprefix $(TMPPATH)/,$(INFOFILESFROMSVN)) 
+	$(MAKE) $(addprefix $(TMPPATH)/,$(DIRFROMSVN)) 
+	$(MAKE) -C $(TMPPATH)/$(DIRFROMSVN) doc
+	$(MAKE) $(TMPDIR)/$(PACKAGEGZIPFILE) $(TMPDIR)/$(PACKAGEBZIPFILE)  
+	/bin/mv -fv $(TMPDIR)/$(PACKAGEGZIPFILE) $(TMPDIR)/$(PACKAGEBZIPFILE) \
+	$(TF_PUBLICATIONPATH) 
 # ----- END OF Makefile -----
