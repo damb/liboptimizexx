@@ -28,7 +28,7 @@
 # ----------------------------------------------------------------------------
 
 .PHONY: all
-all: install doc 
+all: install doc tests
 
 .PHONY: doc
 doc: doxydoc
@@ -328,7 +328,7 @@ package:
 	- /bin/rm -rvf $(TMPPATH) 
 	$(MAKE) $(addprefix $(TMPPATH)/,$(INFOFILESFROMSVN)) 
 	$(MAKE) $(addprefix $(TMPPATH)/,$(DIRFROMSVN)) 
-	$(MAKE) -C $(TMPPATH)/$(DIRFROMSVN) doc tests
+	$(MAKE) -C $(TMPPATH)/$(DIRFROMSVN) doc
 	$(MAKE) $(TMPDIR)/$(PACKAGEGZIPFILE) $(TMPDIR)/$(PACKAGEBZIPFILE)  
 	/bin/mv -fv $(TMPDIR)/$(PACKAGEGZIPFILE) $(TMPDIR)/$(PACKAGEBZIPFILE) \
 	$(TF_PUBLICATIONPATH) 
