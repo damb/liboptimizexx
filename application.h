@@ -51,7 +51,14 @@ namespace optimize
    */
 
   /* ======================================================================= */
-  //! Abstract class template for an parameter space application.
+  /*! Abstract class template for an parameter space application.\n
+   *
+   * If creating a concrete parameter space visitor by inheritance from this
+   * base abstract base class you must take care that your visitor application
+   * works completely thread safe.
+   *
+   * \ingroup group_applications
+   */
   //! \ingroup group_applications
   template <typename Ctype, typename CresultData>
   class ParameterSpaceVisitor

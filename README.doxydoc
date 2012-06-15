@@ -16,6 +16,7 @@
  * REVISIONS and CHANGES 
  *  - 11/03/2012   V1.0   Daniel Armbruster
  *  - 19/03/2012   V1.1   Monte Carlo algorithm section
+ *  - 15/04/2012   V1.2   Note on thread safety of parameter space visitor.
  * 
  * ============================================================================
  */
@@ -136,8 +137,12 @@ optimize::iterator::ForwardNodeIterator.
 /*! \page page_how_to_use How to use a global algorithm
 
 To make use of a \c liboptimizexx global algorithm I'm providing here a short
-sequence of code. First we need an exemplary application created by inheritance
-of the class template optimize::ParameterSpaceVisitor.
+sequence of code.\n
+First we need an exemplary application created by inheritance of the class
+template optimize::ParameterSpaceVisitor. If making use of multithreading
+computation you must take care that your visitor application is thread safe.
+Otherwise there might occur racing conditions which will end up in undefined
+behaviour.
 
 \code
 #include <optimizexx/application.h>
