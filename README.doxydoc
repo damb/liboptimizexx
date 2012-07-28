@@ -44,7 +44,7 @@ $Id$
 This library provides global search and optimization algorithms working with
 any application on a discrete parameter space. The algorithm is responsible for
 the refinement of the parameter space if desired and sending the application
-into the grid. An application must be made available by inheritance from the
+into the grid. An application must be made available by inheritance of 
 class optimize::ParameterSpaceVisitor. If using a global algorithm there only
 must be passed the corresponding parameters so that the algorithm will care
 about the generation of its parameter space and executing an application.\n
@@ -53,15 +53,15 @@ from the global algorithm. It is described with a grid consisting of both
 subgrids and nodes of which the latter are able to store any result data
 type.\n
 
-Additionally the library comes along with an iterator to iterate over the
-entire parameter space. Depending on the iterator strategy the iterator is
-configured with the behaviour of the iterator will change. Up to now both
-forward and reverse iterator strategies are provided which both support
-iterating \a post-ordered and \a pre-ordered. Besides the usual strategy to
-iterate over all grid components of type optimize::GridComponent there are
-additionally iterator strategies which only iterate over either optimze::Grid
-or optimize::Node grid components. Notice that for the implementation of
-optimize::Iterator the <em>Strategy design pattern</em> is in use (GoF p.315).
+Additionally the library comes along with iterators to iterate over the
+entire parameter space. Depending on the iterator strategy an iterator is
+configured with a special behaviour of. Up to now both forward and reverse
+iterator strategies are provided which both support iterating \a post-ordered
+and \a pre-ordered. Besides the usual strategy to iterate over all grid
+components of type optimize::GridComponent there are additionally iterator
+strategies which only iterate over either optimze::Grid or optimize::Node grid
+components. Notice that for the implementation of optimize::Iterator the
+<em>Strategy design pattern</em> is in use (GoF p.315). 
 Strategies are created by the factory class
 optimize::iterator::IteratorStrategyFactory (<em>Factory method design
 pattern</em> GoF p.107). The main advantages of this approach are on one hand
