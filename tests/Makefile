@@ -22,9 +22,11 @@
 # 
 # REVISIONS and CHANGES
 # 01/03/2012	V0.1	Daniel Armbruster
+#
 # ----------------------------------------------------------------------------
-CPPFLAGS=-I$(LOCINCLUDEDIR) $(FLAGS)
-LDFLAGS=-L$(LOCLIBDIR) 
+#
+CPPFLAGS=-I$(LOCALINCLUDEDIR) $(FLAGS)
+LDFLAGS=-L$(LOCALLIBDIR) 
 
 CXXFLAGS=-fhonor-std -Wall $(FLAGS)
 CXXFLAGS=-Wall -pedantic $(FLAGS)
