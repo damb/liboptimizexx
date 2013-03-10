@@ -44,10 +44,10 @@ tests: reinstall $(patsubst %.cc,%,$(TESTS))
 LIBRARIES=liboptimizexx.a liboptimizexx.so
 
 .PHONY: install
-install: $(addprefix $(LOCLIBDIR)/,$(LIBRARIES))
-$(LOCLIBDIR)/%: install-include %
-	mkdir -pv $(LOCLIBDIR)
-	/bin/mv -fv $(word 2,$^) $(LOCLIBDIR)
+install: $(addprefix $(LOCALLIBDIR)/,$(LIBRARIES))
+$(LOCALLIBDIR)/%: install-include %
+	mkdir -pv $(LOCALLIBDIR)
+	/bin/mv -fv $(word 2,$^) $(LOCALLIBDIR)
 
 # ============================================================================
 # a variable definition to check variable settings
@@ -57,7 +57,7 @@ CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 
 # check for required variables
-$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR WWWBASEDIR)
+$(call CHECKVARS,LOCALINCLUDEDIR LOCALLIBDIR DOCWWWBASEDIR)
 
 #======================================================================
 # files and paths
@@ -72,9 +72,9 @@ HEADERS=$(shell find . -name \*.h)
 SRC=error.cc parameter.cc
 
 # place where we will copy header files
-INCINSTALLPATH=$(LOCINCLUDEDIR)/optimizexx
+INCINSTALLPATH=$(LOCALINCLUDEDIR)/optimizexx
 # place where we will copy the binary library
-LIBINSTALLPATH=$(LOCLIBDIR)
+LIBINSTALLPATH=$(LOCALLIBDIR)
 
 # name of headers with comments stripped off (these are linked to your include
 # directory)
@@ -108,8 +108,8 @@ endif
 FLAGS=-march=native -O2 -fno-reorder-blocks -fno-reorder-functions
 FLAGS+=$(MYFLAGS) -fPIC -pipe -std=c++0x
 CXXFLAGS+=-Wall $(FLAGS)
-LDFLAGS=$(addprefix -L,$(LOCLIBDIR))
-CPPFLAGS=$(addprefix -I,$(LOCINCLUDEDIR)) $(FLAGS)
+LDFLAGS=$(addprefix -L,$(LOCALLIBDIR))
+CPPFLAGS=$(addprefix -I,$(LOCALINCLUDEDIR)) $(FLAGS)
 
 #======================================================================
 # targets
@@ -236,13 +236,13 @@ reinstall:
 # directory.
 #
 
-$(call CHECKVARS,DOC_WWWBASEDIR BROWSER)
+$(call CHECKVARS,DOCWWWBASEDIR BROWSER)
 
-DOXYWWWPATH=$(DOC_WWWBASEDIR)/liboptimizexx
+DOXYWWWPATH=$(DOCWWWBASEDIR)/liboptimizexx
 
 .PHONY: doxyclean doxyview doxydoc doxyconf
 
-doxyclean: ;/bin/rm -rfv $(DOC_WWWBASEDIR)/liboptimizexx doxydoc.xxx
+doxyclean: ;/bin/rm -rfv $(DOCWWWBASEDIR)/liboptimizexx doxydoc.xxx
 
 DOXYSRC=$(README) $(HEADERS) $(SRC) 
 #  tests/f77procs.P tests/f77procs.f \
