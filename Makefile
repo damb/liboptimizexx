@@ -57,7 +57,7 @@ CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 
 # check for required variables
-$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR TF_WWWBASEDIR)
+$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR WWWBASEDIR)
 
 #======================================================================
 # files and paths
@@ -236,13 +236,13 @@ reinstall:
 # directory.
 #
 
-$(call CHECKVARS,TF_WWWBASEDIR TF_BROWSER)
+$(call CHECKVARS,DOC_WWWBASEDIR BROWSER)
 
-DOXYWWWPATH=$(TF_WWWBASEDIR)/liboptimizexx
+DOXYWWWPATH=$(DOC_WWWBASEDIR)/liboptimizexx
 
 .PHONY: doxyclean doxyview doxydoc doxyconf
 
-doxyclean: ;/bin/rm -rfv $(TF_WWWBASEDIR)/liboptimizexx doxydoc.xxx
+doxyclean: ;/bin/rm -rfv $(DOC_WWWBASEDIR)/liboptimizexx doxydoc.xxx
 
 DOXYSRC=$(README) $(HEADERS) $(SRC) 
 #  tests/f77procs.P tests/f77procs.f \
@@ -264,7 +264,7 @@ $(DOXYWWWPATH)/html/index.html: doxydoc.xxx $(DOXYSRC)
 doxydoc: $(DOXYWWWPATH)/html/index.html
 
 doxyview: $(DOXYWWWPATH)/html/index.html
-	$(TF_BROWSER) file:$< &
+	$(BROWSER) file:$< &
 
 #======================================================================
 # delegate test targets
